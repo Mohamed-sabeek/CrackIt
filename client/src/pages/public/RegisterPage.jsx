@@ -66,26 +66,42 @@ const RegisterPage = () => {
     setSuccessMsg('');
 
     // Local validations
-    if (!name || !email || !password || !confirmPassword) {
-      setErrorMsg('Please enter all fields');
+    if (!name.trim()) {
+      setErrorMsg('Full name is required.');
+      return;
+    }
+
+    if (!email.trim()) {
+      setErrorMsg('Email is required.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setErrorMsg('Please enter a valid email address.');
+      return;
+    }
+
+    if (!password) {
+      setErrorMsg('Password is required.');
       return;
     }
 
     if (password !== confirmPassword) {
-      setErrorMsg('Passwords do not match');
+      setErrorMsg('Passwords do not match.');
       return;
     }
 
-    if (password.length < 6) {
-      setErrorMsg('Password must be at least 6 characters');
+    if (password.length < 8) {
+      setErrorMsg('Password must be at least 8 characters long.');
       return;
     }
 
     setFormLoading(true);
 
     try {
-      await register(name, email, password, confirmPassword);
-      setSuccessMsg('Account created successfully! Redirecting to login...');
+      await register(name.trim(), email.trim(), password, confirmPassword);
+      setSuccessMsg('Account created successfully. Please login.');
       
       // Reset form fields
       setName('');
@@ -98,7 +114,7 @@ const RegisterPage = () => {
         navigate('/login', { replace: true });
       }, 1500);
     } catch (err) {
-      setErrorMsg(err.message || 'Registration failed. Please check inputs.');
+      setErrorMsg(err.message || 'Something went wrong. Please try again later.');
       setFormLoading(false);
     }
   };
@@ -175,7 +191,6 @@ const RegisterPage = () => {
                 </span>
                 <input 
                   type="text"
-                  required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Mohamed Sabeek"
@@ -193,7 +208,6 @@ const RegisterPage = () => {
                 </span>
                 <input 
                   type="email"
-                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
@@ -211,7 +225,6 @@ const RegisterPage = () => {
                 </span>
                 <input 
                   type={showPassword ? 'text' : 'password'}
-                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Min 6 characters"
@@ -246,7 +259,6 @@ const RegisterPage = () => {
                 </span>
                 <input 
                   type={showConfirmPassword ? 'text' : 'password'}
-                  required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm password"
@@ -271,7 +283,7 @@ const RegisterPage = () => {
               {formLoading ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 size={16} className="animate-spin" />
-                  Creating account...
+                  Creating Account...
                 </span>
               ) : (
                 <>

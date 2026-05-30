@@ -37,7 +37,6 @@ export const AuthProvider = ({ children }) => {
 
   // Login handler
   const login = async (email, password) => {
-    setLoading(true);
     setError(null);
     try {
       const res = await api.post(`${API_URL}/login`, { email, password });
@@ -49,11 +48,9 @@ export const AuthProvider = ({ children }) => {
         setToken(userToken);
         setUser(userData);
         
-        setLoading(false);
         return userData;
       }
     } catch (err) {
-      setLoading(false);
       const errMsg = err.response?.data?.message || 'Login failed. Please try again.';
       setError(errMsg);
       throw new Error(errMsg);
@@ -62,7 +59,6 @@ export const AuthProvider = ({ children }) => {
 
   // Register handler
   const register = async (name, email, password, confirmPassword) => {
-    setLoading(true);
     setError(null);
     try {
       const res = await api.post(`${API_URL}/register`, { 
@@ -72,10 +68,8 @@ export const AuthProvider = ({ children }) => {
         confirmPassword 
       });
       
-      setLoading(false);
       return res.data;
     } catch (err) {
-      setLoading(false);
       const errMsg = err.response?.data?.message || 'Registration failed. Please try again.';
       setError(errMsg);
       throw new Error(errMsg);

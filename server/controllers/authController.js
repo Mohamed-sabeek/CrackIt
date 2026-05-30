@@ -62,22 +62,32 @@ export const registerUser = async (req, res) => {
     const { name, email, password, confirmPassword } = req.body;
 
     // Validate inputs
-    if (!name || !email || !password || !confirmPassword) {
-      return res.status(400).json({ success: false, message: 'Please enter all fields' });
+    if (!name) {
+      return res.status(400).json({ success: false, message: 'Full name is required.' });
+    }
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email is required.' });
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
     }
 
+    if (!password) {
+      return res.status(400).json({ success: false, message: 'Password is required.' });
+    }
     if (password !== confirmPassword) {
-      return res.status(400).json({ success: false, message: 'Passwords do not match' });
+      return res.status(400).json({ success: false, message: 'Passwords do not match.' });
     }
-
-    if (password.length < 6) {
-      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters' });
+    if (password.length < 8) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long.' });
     }
 
     // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ success: false, message: 'User already exists with this email' });
+      return res.status(409).json({ success: false, message: 'An account with this email already exists.' });
     }
 
     // Create user with real initial progress
@@ -99,7 +109,7 @@ export const registerUser = async (req, res) => {
     if (user) {
       res.status(201).json({
         success: true,
-        message: 'Registration successful! Redirecting to login...',
+        message: 'Account created successfully. Please login.',
         data: {
           _id: user._id,
           name: user.name,
@@ -111,7 +121,8 @@ export const registerUser = async (req, res) => {
       res.status(400).json({ success: false, message: 'Invalid user data' });
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('Registration backend error:', error);
+    res.status(500).json({ success: false, message: 'Something went wrong. Please try again later.' });
   }
 };
 
@@ -122,40 +133,54 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ success: false, message: 'Please provide email and password' });
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email is required.' });
+    }
+    if (!password) {
+      return res.status(400).json({ success: false, message: 'Password is required.' });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
     }
 
     // Check for user
     let user = await User.findOne({ email });
-
-    if (user && (await user.matchPassword(password))) {
-      // Ensure missing tracking fields are initialized
-      user = await ensureProgressFields(user);
-
-      res.json({
-        success: true,
-        token: generateToken(user._id),
-        user: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          studyStreak: user.studyStreak,
-          studyHours: user.studyHours,
-          mockTestsSolved: user.mockTestsSolved,
-          latestMockScore: user.latestMockScore,
-          activeCourse: user.activeCourse,
-          subjectsList: user.subjectsList,
-          activityTimeline: user.activityTimeline,
-          studyTargets: user.studyTargets
-        }
-      });
-    } else {
-      res.status(401).json({ success: false, message: 'Invalid email or password' });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Account not found. Please register first.' });
     }
+
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: 'Incorrect password. Please try again.' });
+    }
+
+    // Ensure missing tracking fields are initialized
+    user = await ensureProgressFields(user);
+
+    res.json({
+      success: true,
+      message: 'Welcome back!',
+      token: generateToken(user._id),
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        studyStreak: user.studyStreak,
+        studyHours: user.studyHours,
+        mockTestsSolved: user.mockTestsSolved,
+        latestMockScore: user.latestMockScore,
+        activeCourse: user.activeCourse,
+        subjectsList: user.subjectsList,
+        activityTimeline: user.activityTimeline,
+        studyTargets: user.studyTargets
+      }
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('Login backend error:', error);
+    res.status(500).json({ success: false, message: 'Something went wrong. Please try again later.' });
   }
 };
 

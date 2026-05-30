@@ -20,4 +20,21 @@ api.interceptors.request.use(
   }
 );
 
+// Set up a response interceptor to intercept expired tokens (401 Unauthorized) and redirect to login
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      const isAuthPage = window.location.pathname === '/login' || window.location.pathname === '/register';
+      const isLoginRequest = error.config?.url?.includes('login') || error.config?.url?.includes('/auth');
+      
+      if (!isAuthPage && !isLoginRequest) {
+        localStorage.removeItem('crackit_token');
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

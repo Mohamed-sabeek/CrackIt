@@ -11,7 +11,6 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -29,18 +28,32 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      setErrorMsg('Please enter both email and password');
+    
+    setErrorMsg('');
+    setSuccessMsg('');
+
+    // Custom validations
+    if (!email) {
+      setErrorMsg('Email is required.');
+      return;
+    }
+    
+    if (!password) {
+      setErrorMsg('Password is required.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMsg('Please enter a valid email address.');
       return;
     }
 
     setFormLoading(true);
-    setErrorMsg('');
-    setSuccessMsg('');
 
     try {
       const userData = await login(email, password);
-      setSuccessMsg('Welcome back! Logging in...');
+      setSuccessMsg('Welcome back!');
       
       setTimeout(() => {
         if (userData.role === 'admin') {
@@ -50,7 +63,7 @@ const LoginPage = () => {
         }
       }, 800);
     } catch (err) {
-      setErrorMsg(err.message || 'Invalid email or password');
+      setErrorMsg(err.message || 'Something went wrong. Please try again later.');
       setFormLoading(false);
     }
   };
@@ -127,7 +140,6 @@ const LoginPage = () => {
                 </span>
                 <input 
                   type="email"
-                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
@@ -150,7 +162,6 @@ const LoginPage = () => {
                 </span>
                 <input 
                   type={showPassword ? 'text' : 'password'}
-                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
@@ -166,18 +177,6 @@ const LoginPage = () => {
               </div>
             </div>
 
-            {/* Remember Me checkbox */}
-            <div className="flex items-center justify-between pt-1">
-              <label className="flex items-center gap-2.5 cursor-pointer group">
-                <input 
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="rounded border-white/[0.08] bg-slate-900 text-blue-600 focus:ring-0 outline-none w-4 h-4 cursor-pointer" 
-                />
-                <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors duration-200 select-none">Remember this browser</span>
-              </label>
-            </div>
 
             {/* Submit Button */}
             <button
@@ -188,7 +187,7 @@ const LoginPage = () => {
               {formLoading ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 size={16} className="animate-spin" />
-                  Verifying account...
+                  Signing In...
                 </span>
               ) : (
                 <>
