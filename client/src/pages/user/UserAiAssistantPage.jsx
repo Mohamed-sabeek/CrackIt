@@ -1,57 +1,199 @@
-import React, { useState } from 'react';
-import UserAiAssistant from '../../components/user/ai/UserAiAssistant';
+import React, { useState, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
+import api from '../../config/api';
+import ChatSidebar from '../../components/user/ai/ChatSidebar';
+import ChatWindow from '../../components/user/ai/ChatWindow';
+import ChatInput from '../../components/user/ai/ChatInput';
 
 const UserAiAssistantPage = () => {
-  const [chatMsg, setChatMsg] = useState('');
-  const [isAiTyping, setIsAiTyping] = useState(false);
-  const [chatHistory, setChatHistory] = useState([
-    { role: 'ai', text: "Vanakkam! I am your Crackit AI study assistant. Ask me anything about the TNPSC Group 4 syllabus, study tips, or dynamic concept explanations!" }
-  ]);
+  const [sessions, setSessions] = useState([]);
+  const [currentSessionId, setCurrentSessionId] = useState(null);
+  const [currentSessionTitle, setCurrentSessionTitle] = useState('');
+  const [messages, setMessages] = useState([]);
+  
+  const [messageText, setMessageText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
-  const handleAiSuggestion = (text) => {
-    setChatMsg(text);
-    submitChat(text);
+  // 1. Fetch all chat history sessions on mount
+  const fetchSessions = async () => {
+    try {
+      const res = await api.get('/ai/sessions');
+      if (res.data && res.data.sessions) {
+        setSessions(res.data.sessions);
+      }
+    } catch (err) {
+      console.error('Failed to load chat history', err);
+    }
   };
 
-  const submitChat = (msgText = chatMsg) => {
-    if (!msgText.trim()) return;
+  useEffect(() => {
+    fetchSessions();
+  }, []);
 
-    const userMessage = { role: 'user', text: msgText };
-    setChatHistory(prev => [...prev, userMessage]);
-    setChatMsg('');
-    setIsAiTyping(true);
-
-    setTimeout(() => {
-      let reply = "I can definitely help you with that! As your TNPSC AI Mentor, let me clarify: ";
-      const textLower = msgText.toLowerCase();
-
-      if (textLower.includes('directive principles') || textLower.includes('dpsp')) {
-        reply = "Directive Principles of State Policy (Part IV, Articles 36-51) are non-justiciable in court but fundamental to governance. They direct the state to establish a social, economic, and political democracy. Key articles include Article 39A (Equal justice and free legal aid), Article 40 (Organization of village panchayats), and Article 44 (Uniform Civil Code).";
-      } else if (textLower.includes('history') || textLower.includes('ancient')) {
-        reply = "For TNPSC History, focus heavily on the Indus Valley Civilization, Guptas, Delhi Sultanate, Mughals, and the South Indian kingdoms (Cholas, Cheras, Pandyas, Vijayanagar). The Chola administrative system (Uttaramerur inscriptions detailing local self-government) is a highly repeated TNPSC question!";
-      } else if (textLower.includes('geography')) {
-        reply = "Important Geography themes: Rivers and drainage networks (Cauvery, Vaigai, Palar systems in Tamil Nadu), physical relief maps, southwest/northeast monsoon patterns (remember NE monsoon yields maximum rainfall to Tamil Nadu coast), and forest reservation types.";
-      } else if (textLower.includes('polity tips')) {
-        reply = "Polity represents roughly 15-20 questions in Group 4. Memorize Parts I to IV-A completely, schedule names (especially 7th, 8th, 11th, and 12th schedules), and key constitutional amendments like the 42nd, 44th, 73rd, and 74th!";
-      } else {
-        reply = `That is a vital topic for the TNPSC Group 4 syllabus. For "${msgText}", you should study the state board syllabus books (Standard 6th to 10th). Focus on key units, sub-topics, key articles, and memorize repeating mock patterns!`;
+  // 2. Fetch all messages in the selected session
+  const selectSession = async (sessionId) => {
+    setLoading(true);
+    setErrorMessage('');
+    setIsMobileSidebarOpen(false);
+    try {
+      const res = await api.get(`/ai/sessions/${sessionId}`);
+      if (res.data && res.data.messages) {
+        setCurrentSessionId(sessionId);
+        setCurrentSessionTitle(res.data.session.title);
+        setMessages(res.data.messages);
       }
+    } catch (err) {
+      console.error('Failed to load session details', err);
+      setErrorMessage('Failed to load this conversation. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      setChatHistory(prev => [...prev, { role: 'ai', text: reply }]);
-      setIsAiTyping(false);
-    }, 1200);
+  // 3. Delete a specific session
+  const deleteSession = async (sessionId) => {
+    if (!window.confirm('Are you sure you want to delete this chat session?')) return;
+    
+    try {
+      await api.delete(`/ai/sessions/${sessionId}`);
+      setSessions(prev => prev.filter(s => s._id !== sessionId));
+      if (currentSessionId === sessionId) {
+        resetToNewChat();
+      }
+    } catch (err) {
+      console.error('Failed to delete session', err);
+      alert('Failed to delete chat session. Please try again.');
+    }
+  };
+
+  // 4. Reset state to New Chat mode
+  const resetToNewChat = () => {
+    setCurrentSessionId(null);
+    setCurrentSessionTitle('');
+    setMessages([]);
+    setMessageText('');
+    setErrorMessage('');
+    setIsMobileSidebarOpen(false);
+  };
+
+  // 5. Send Message to AI Tutor backend API
+  const handleSendMessage = async (textToSend) => {
+    if (!textToSend.trim()) return;
+
+    const trimmedText = textToSend.trim();
+    
+    // Add user message optimistically to bubble list
+    const optimisticUserMessage = {
+      role: 'user',
+      content: trimmedText,
+      _id: `temp-${Date.now()}`
+    };
+    
+    setMessages(prev => [...prev, optimisticUserMessage]);
+    setMessageText('');
+    setIsTyping(true);
+    setErrorMessage('');
+
+    try {
+      const res = await api.post('/ai/chat', {
+        message: trimmedText,
+        sessionId: currentSessionId // sends active session ID, or null if starting a new chat session
+      });
+
+      if (res.data && res.data.success) {
+        // Update current active session context
+        if (res.data.isNewSession) {
+          setCurrentSessionId(res.data.sessionId);
+          setCurrentSessionTitle(res.data.sessionTitle);
+          // Refetch sessions sidebar listings
+          fetchSessions();
+        }
+        
+        // Append response message from Groq
+        setMessages(prev => [
+          ...prev.filter(m => !m._id.startsWith('temp-')), // clean up optimistic temp message
+          res.data.userMessage,
+          res.data.replyMessage
+        ]);
+      }
+    } catch (err) {
+      console.error('AI chat failed:', err);
+      
+      // Remove the optimistic user message if first call fails and show graceful user-friendly error
+      setMessages(prev => prev.filter(m => !m._id.startsWith('temp-')));
+      
+      const errorMsgText = err.response?.data?.message || 'AI Tutor is temporarily unavailable. Please try again later.';
+      setErrorMessage(errorMsgText);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   return (
-    <div className="py-2">
-      <UserAiAssistant 
-        chatHistory={chatHistory}
-        isAiTyping={isAiTyping}
-        chatMsg={chatMsg}
-        setChatMsg={setChatMsg}
-        submitChat={submitChat}
-        handleAiSuggestion={handleAiSuggestion}
-      />
+    <div className="h-[calc(100vh-10rem)] border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden flex bg-white dark:bg-slate-950 shadow-sm relative">
+      
+      {/* Mobile Toggle Trigger Button */}
+      <button
+        onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+        className="absolute top-4 left-4 z-40 p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl md:hidden text-slate-700 dark:text-slate-200 border-0 cursor-pointer shadow-sm"
+      >
+        {isMobileSidebarOpen ? <X size={16} /> : <Menu size={16} />}
+      </button>
+
+      {/* Desktop sidebar */}
+      <div className="hidden md:block h-full">
+        <ChatSidebar
+          sessions={sessions}
+          currentSessionId={currentSessionId}
+          onSelectSession={selectSession}
+          onDeleteSession={deleteSession}
+          onNewChat={resetToNewChat}
+        />
+      </div>
+
+      {/* Mobile drawer overlay sidebar */}
+      {isMobileSidebarOpen && (
+        <div className="absolute inset-0 z-30 flex md:hidden bg-slate-900/40 backdrop-blur-xs">
+          <div className="w-80 h-full animate-slide-in">
+            <ChatSidebar
+              sessions={sessions}
+              currentSessionId={currentSessionId}
+              onSelectSession={selectSession}
+              onDeleteSession={deleteSession}
+              onNewChat={resetToNewChat}
+            />
+          </div>
+          <div className="flex-1" onClick={() => setIsMobileSidebarOpen(false)} />
+        </div>
+      )}
+
+      {/* Main chat window container */}
+      <div className="flex-1 flex flex-col justify-between h-full min-w-0">
+        
+        {/* Chat conversations area */}
+        <ChatWindow
+          messages={messages}
+          loading={loading}
+          isTyping={isTyping}
+          errorMessage={errorMessage}
+          onSelectSuggestion={handleSendMessage}
+          activeSessionTitle={currentSessionTitle}
+        />
+
+        {/* Input box bottom panel */}
+        <ChatInput
+          message={messageText}
+          setMessage={setMessageText}
+          onSendMessage={handleSendMessage}
+          onClearChat={currentSessionId ? resetToNewChat : null}
+          disabled={loading || isTyping}
+        />
+
+      </div>
+
     </div>
   );
 };

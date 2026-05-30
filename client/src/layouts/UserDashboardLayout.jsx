@@ -32,12 +32,11 @@ const UserDashboardLayout = () => {
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'Syllabus', path: '/dashboard/syllabus', icon: Compass },
+    { name: 'Study Library', path: '/dashboard/syllabus', icon: Compass },
     { name: 'Previous Papers', path: '/dashboard/papers', icon: FileText },
     { name: 'Mock Tests', path: '/dashboard/mocktests', icon: HelpCircle },
-    { name: 'Daily Quiz', path: '/dashboard/dailyquiz', icon: Flame },
-    { name: 'AI Assistant', path: '/dashboard/ai', icon: Bot },
     { name: 'My Results', path: '/dashboard/results', icon: Award },
+    { name: 'AI Tutor', path: '/dashboard/ai-assistant', icon: Bot },
     { name: 'Settings', path: '/dashboard/settings', icon: Settings }
   ];
 

@@ -9,6 +9,7 @@ import paperRoutes from './routes/paperRoutes.js';
 import questionRoutes from './routes/questionRoutes.js';
 import testRoutes from './routes/testRoutes.js';
 import testAttemptRoutes from './routes/testAttemptRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
 
 dotenv.config();
 
@@ -62,6 +63,7 @@ app.use('/api/papers', paperRoutes);
 app.use('/api/questions', questionRoutes);
 app.use('/api/tests', testRoutes);
 app.use('/api/test-attempts', testAttemptRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Basic Route
 app.get('/', (req, res) => {

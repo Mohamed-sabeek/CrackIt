@@ -35,8 +35,6 @@ import AdminDashboardPage from '../pages/admin/AdminDashboardPage';
 import UserManagementPage from '../pages/admin/UserManagementPage';
 import ExamManagementPage from '../pages/admin/ExamManagementPage';
 import MockTestsManagementPage from '../pages/admin/MockTestsManagementPage';
-import AiAssistantManagementPage from '../pages/admin/AiAssistantManagementPage';
-import AnalyticsPage from '../pages/admin/AnalyticsPage';
 import AdminStudyLibraryPage from '../pages/admin/AdminStudyLibraryPage';
 import SettingsPage from '../pages/admin/SettingsPage';
 import AdminPapersPage from '../pages/admin/AdminPapersPage';
@@ -79,13 +77,16 @@ const AppRoutes = () => {
         <Route path="papers" element={<UserPapersPage />} />
         <Route path="mocktests" element={<UserMockTestsPage />} />
         <Route path="dailyquiz" element={<UserDailyQuizPage />} />
-        <Route path="ai" element={<UserAiAssistantPage />} />
+        <Route path="ai-assistant" element={<UserAiAssistantPage />} />
         <Route path="analytics" element={<UserAnalyticsPage />} />
         <Route path="settings" element={<UserSettingsPage />} />
         
         <Route path="results" element={<ResultsPage />} />
         <Route path="results/:id" element={<AttemptDetailsPage />} />
       </Route>
+
+      {/* Redirect direct /ai-assistant to the dashboard sub-route */}
+      <Route path="/ai-assistant" element={<ProtectedRoute><Navigate to="/dashboard/ai-assistant" replace /></ProtectedRoute>} />
 
       {/* Standalone Protected Routes for Tests and Results */}
       <Route path="/mock-tests/:id" element={<ProtectedRoute><TestInterfacePage /></ProtectedRoute>} />
@@ -104,8 +105,6 @@ const AppRoutes = () => {
         <Route path="users" element={<UserManagementPage />} />
         <Route path="exams" element={<ExamManagementPage />} />
         <Route path="mocktests" element={<MockTestsManagementPage />} />
-        <Route path="ai" element={<AiAssistantManagementPage />} />
-        <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="library" element={<AdminStudyLibraryPage />} />
         <Route path="papers" element={<AdminPapersPage />} />
         <Route path="settings" element={<SettingsPage />} />
