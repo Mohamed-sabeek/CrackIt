@@ -36,7 +36,6 @@ const AdminDashboardLayout = () => {
     { name: 'Previous Papers', path: '/admin/papers', icon: FileText },
     { name: 'Mock Tests', path: '/admin/mocktests', icon: HelpCircle },
     { name: 'Users', path: '/admin/users', icon: Users },
-    { name: 'Exams', path: '/admin/exams', icon: BookOpen },
     { name: 'AI Assistant', path: '/admin/ai', icon: Bot },
     { name: 'Settings', path: '/admin/settings', icon: Settings }
   ];
