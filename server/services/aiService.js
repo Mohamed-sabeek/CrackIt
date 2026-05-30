@@ -1,14 +1,16 @@
 import axios from 'axios';
+import aiConfig from '../config/aiConfig.js';
 
 const GROQ_API_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 
 export const getGroqReply = async (messages) => {
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
-    throw new Error('GROQ_API_KEY environment variable is not configured.');
-  }
+  const apiKey = aiConfig.apiKey;
+  const model = aiConfig.model;
 
-  const model = process.env.GROQ_MODEL || 'llama-3.3-70b-specdec'; // central fallback to llama 3.3 70b stable
+  if (!apiKey) {
+    console.error('❌ GROQ_API_KEY environment variable is missing.');
+    throw new Error('AI Tutor is temporarily unavailable. Please try again later.');
+  }
 
   try {
     const response = await axios.post(
@@ -17,7 +19,7 @@ export const getGroqReply = async (messages) => {
         model: model,
         messages: messages,
         temperature: 0.7,
-        max_tokens: 1500
+        max_tokens: 2048
       },
       {
         headers: {
@@ -34,7 +36,7 @@ export const getGroqReply = async (messages) => {
       throw new Error('Invalid response structure received from Groq API.');
     }
   } catch (error) {
-    console.error('Groq API Error details:', error.response?.data || error.message);
-    throw new Error('Groq AI service integration failed.');
+    console.error('❌ Groq API Error details:', error.response?.data || error.message);
+    throw new Error('AI Tutor is temporarily unavailable. Please try again later.');
   }
 };

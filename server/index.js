@@ -28,6 +28,20 @@ if (!process.env.JWT_SECRET) {
   process.exit(1);
 }
 
+if (!process.env.GROQ_API_KEY) {
+  console.error('\n❌ CRITICAL STARTUP ERROR: GROQ_API_KEY environment variable is missing.');
+  console.error('Please configure GROQ_API_KEY in your server/.env file or production host settings.');
+  console.error('Server startup aborted.\n');
+  process.exit(1);
+}
+
+if (!process.env.GROQ_MODEL) {
+  console.error('\n❌ CRITICAL STARTUP ERROR: GROQ_MODEL environment variable is missing.');
+  console.error('Please configure GROQ_MODEL in your server/.env file or production host settings.');
+  console.error('Server startup aborted.\n');
+  process.exit(1);
+}
+
 const app = express();
 
 // Secure Dynamic CORS configuration
