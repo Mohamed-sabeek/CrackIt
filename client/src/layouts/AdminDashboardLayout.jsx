@@ -38,7 +38,6 @@ const AdminDashboardLayout = () => {
     { name: 'Users', path: '/admin/users', icon: Users },
     { name: 'Exams', path: '/admin/exams', icon: BookOpen },
     { name: 'AI Assistant', path: '/admin/ai', icon: Bot },
-    { name: 'Analytics', path: '/admin/analytics', icon: TrendingUp },
     { name: 'Settings', path: '/admin/settings', icon: Settings }
   ];
 

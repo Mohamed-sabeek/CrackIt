@@ -37,7 +37,6 @@ const UserDashboardLayout = () => {
     { name: 'Mock Tests', path: '/dashboard/mocktests', icon: HelpCircle },
     { name: 'Daily Quiz', path: '/dashboard/dailyquiz', icon: Flame },
     { name: 'AI Assistant', path: '/dashboard/ai', icon: Bot },
-    { name: 'Analytics', path: '/dashboard/analytics', icon: BarChart3 },
     { name: 'My Results', path: '/dashboard/results', icon: Award },
     { name: 'Settings', path: '/dashboard/settings', icon: Settings }
   ];
