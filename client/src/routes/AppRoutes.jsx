@@ -79,7 +79,7 @@ const AppRoutes = () => {
         <Route path="dailyquiz" element={<UserDailyQuizPage />} />
         <Route path="ai-assistant" element={<UserAiAssistantPage />} />
         <Route path="analytics" element={<UserAnalyticsPage />} />
-        <Route path="settings" element={<UserSettingsPage />} />
+        <Route path="profile" element={<UserSettingsPage />} />
         
         <Route path="results" element={<ResultsPage />} />
         <Route path="results/:id" element={<AttemptDetailsPage />} />

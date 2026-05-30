@@ -1,5 +1,6 @@
 import Test from '../models/Test.js';
 import TestAttempt from '../models/TestAttempt.js';
+import Notification from '../models/Notification.js';
 
 export const getTests = async (req, res) => {
   try {
@@ -44,6 +45,28 @@ export const createTest = async (req, res) => {
       createdBy: req.user._id
     });
     await test.save();
+
+    // Automatically trigger notification
+    try {
+      if (test.testType === 'daily_quiz') {
+        await Notification.create({
+          title: '🔥 Daily Quiz Available',
+          message: `${test.title || "Today's Daily Quiz"} is ready.`,
+          type: 'daily_quiz',
+          createdBy: req.user ? req.user._id : null
+        });
+      } else {
+        await Notification.create({
+          title: '📝 New Mock Test Available',
+          message: `${test.title} is now live.`,
+          type: 'mock_test',
+          createdBy: req.user ? req.user._id : null
+        });
+      }
+    } catch (notifErr) {
+      console.error('Failed to create notification for test:', notifErr);
+    }
+
     res.status(201).json(test);
   } catch (error) {
     res.status(500).json({ message: 'Error creating test', error: error.message });

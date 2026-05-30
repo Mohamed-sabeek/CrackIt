@@ -68,8 +68,15 @@ const initDB = async () => {
 };
 initDB();
 
+import userRoutes from './routes/userRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/papers', paperRoutes);
 app.use('/api/questions', questionRoutes);

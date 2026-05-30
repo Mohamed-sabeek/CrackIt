@@ -1,4 +1,5 @@
 import Paper from '../models/Paper.js';
+import Notification from '../models/Notification.js';
 import { convertDriveLink, convertDriveImageLink } from '../utils/driveHelper.js';
 
 export const createPaper = async (req, res) => {
@@ -22,6 +23,19 @@ export const createPaper = async (req, res) => {
     });
 
     const savedPaper = await newPaper.save();
+
+    // Automatically trigger notification
+    try {
+      await Notification.create({
+        title: '📄 New Previous Paper Added',
+        message: `${savedPaper.title} is now available.`,
+        type: 'previous_paper',
+        createdBy: req.user ? req.user._id : null
+      });
+    } catch (notifErr) {
+      console.error('Failed to create notification for previous paper:', notifErr);
+    }
+
     res.status(201).json(savedPaper);
   } catch (error) {
     console.error('Error creating paper:', error);

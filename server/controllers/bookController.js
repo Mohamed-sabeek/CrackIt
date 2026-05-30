@@ -1,4 +1,5 @@
 import Book from '../models/Book.js';
+import Notification from '../models/Notification.js';
 import { convertDriveLink, convertDriveImageLink } from '../utils/driveHelper.js';
 
 export const createBook = async (req, res) => {
@@ -22,6 +23,19 @@ export const createBook = async (req, res) => {
     });
 
     const savedBook = await newBook.save();
+
+    // Automatically trigger notification
+    try {
+      await Notification.create({
+        title: '📚 New Study Material Added',
+        message: `${savedBook.title} has been added to Study Library.`,
+        type: 'study_material',
+        createdBy: req.user ? req.user._id : null
+      });
+    } catch (notifErr) {
+      console.error('Failed to create notification for study material:', notifErr);
+    }
+
     res.status(201).json(savedBook);
   } catch (error) {
     console.error('Error creating book:', error);
