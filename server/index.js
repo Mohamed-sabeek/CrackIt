@@ -1,6 +1,6 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import seedAdmin from './config/seed.js';
 import authRoutes from './routes/authRoutes.js';
@@ -10,8 +10,6 @@ import questionRoutes from './routes/questionRoutes.js';
 import testRoutes from './routes/testRoutes.js';
 import testAttemptRoutes from './routes/testAttemptRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
-
-dotenv.config();
 
 // Startup validation for critical configuration variables
 if (!process.env.MONGO_URI) {
