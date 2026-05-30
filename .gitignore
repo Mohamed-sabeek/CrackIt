@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment Files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.production.local
+client/.env
+client/.env.local
+client/.env.production.local
+server/.env
+server/.env.local
+
+# Build outputs
+dist/
+client/dist/
+build/
+client/build/
+.next/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+server-error.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor directories and files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Test coverage
+coverage/
+
+# Misc
+.npm
+package-lock.json
+client/package-lock.json
+server/package-lock.json
+yarn.lock
+*.csv

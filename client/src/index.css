@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --animate-shine: shine 1s ease-in-out;
+
+  @keyframes shine {
+    0% {
+      transform: skewX(-12deg) translateX(-150%);
+    }
+    100% {
+      transform: skewX(-12deg) translateX(250%);
+    }
+  }
+}
+
+@layer base {
+  body {
+    background-color: var(--color-slate-50);
+    color: var(--color-slate-900);
+    transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1), color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .dark body {
+    background-color: var(--color-slate-950);
+    color: var(--color-slate-100);
+  }
+}
+
+@utility glass-card {
+  background-color: rgb(255 255 255 / 0.95);
+  backdrop-filter: blur(8px);
+  border-width: 1px;
+  border-color: rgb(226 232 240 / 0.8);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+  border-radius: 0.75rem;
+}
+
+@utility text-gradient {
+  background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, var(--color-blue-600), var(--color-indigo-600));
+}

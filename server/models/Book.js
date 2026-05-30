@@ -1,0 +1,41 @@
+import mongoose from 'mongoose';
+
+const bookSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: [true, 'Title is required']
+  },
+  board: {
+    type: String,
+    enum: ['Stateboard', 'NCERT'],
+    required: [true, 'Board is required']
+  },
+  className: {
+    type: String,
+    required: [true, 'Class name is required']
+  },
+  subject: {
+    type: String,
+    required: [true, 'Subject is required']
+  },
+  driveLink: {
+    type: String,
+    required: [true, 'Drive Link is required']
+  },
+  previewUrl: {
+    type: String
+  },
+  downloadUrl: {
+    type: String
+  },
+  thumbnail: {
+    type: String,
+    default: ''
+  },
+  uploadedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
+}, { timestamps: true });
+
+export default mongoose.model('Book', bookSchema);
