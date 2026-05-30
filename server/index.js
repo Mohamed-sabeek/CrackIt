@@ -30,18 +30,17 @@ if (!process.env.JWT_SECRET) {
 const app = express();
 
 // Secure Dynamic CORS configuration
-const allowedOrigins = ['http://localhost:5173', process.env.CLIENT_URL].filter(Boolean);
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://crack-it-two.vercel.app"
+];
 
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, postman, server-to-server)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.includes(origin)) {
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.warn(`⚠️ CORS Warning: Request from blocked origin: ${origin}`);
-      callback(new Error('Access blocked by CORS policy. Specified origin is not allowed.'));
+      callback(new Error("CORS blocked"));
     }
   },
   credentials: true
