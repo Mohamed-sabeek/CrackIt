@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, BookOpen, Download, Eye, LayoutGrid, List, Library, FileText, Loader } from 'lucide-react';
-import axios from 'axios';
+import api from '../../../config/api';
 
 const EXAMS = ['TNPSC Group 1', 'TNPSC Group 2', 'TNPSC Group 2A', 'TNPSC Group 4', 'VAO', 'TNUSRB', 'SSC', 'Railway', 'Banking', 'UPSC'];
 const STAGES = ['Prelims', 'Mains', 'Interview'];
@@ -23,7 +23,7 @@ const UserPapers = () => {
   useEffect(() => {
     const fetchPapers = async () => {
       try {
-        const res = await axios.get('/api/papers');
+        const res = await api.get('/papers');
         if (Array.isArray(res.data)) {
           setPapers(res.data);
         } else {

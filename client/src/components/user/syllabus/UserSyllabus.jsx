@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, BookOpen, Download, Eye, LayoutGrid, List, Library, FileText, Loader } from 'lucide-react';
-import axios from 'axios';
+import api from '../../../config/api';
 
 const BOARDS = ['Stateboard', 'NCERT'];
 const CLASSES = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
@@ -21,7 +21,7 @@ const UserSyllabus = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const res = await axios.get('/api/books');
+        const res = await api.get('/books');
         if (Array.isArray(res.data)) {
           setBooks(res.data);
         } else {
