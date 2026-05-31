@@ -343,10 +343,8 @@ const UserDashboardLayout = () => {
                 <span>{new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
               </div>
 
-              {/* 2. Theme Toggle (Desktop Only) */}
-              <div className="hidden sm:block">
-                <ThemeToggle />
-              </div>
+              {/* 2. Theme Toggle */}
+              <ThemeToggle />
 
               {/* 3. Notifications */}
               <div className="relative no-close-dropdown" onClick={(e) => e.stopPropagation()}>
