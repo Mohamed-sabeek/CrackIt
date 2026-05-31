@@ -1,7 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, BookOpen, Download, Eye, LayoutGrid, List, Library, FileText, Loader } from 'lucide-react';
+import { Search, BookOpen, Download, Eye, LayoutGrid, List, FileText, Loader, ChevronDown } from 'lucide-react';
 import api from '../../../config/api';
+import CustomSelect from '../../common/CustomSelect';
+import PageHeader from '../../common/PageHeader';
 
 const EXAMS = ['TNPSC Group 1', 'TNPSC Group 2', 'TNPSC Group 2A', 'TNPSC Group 4', 'VAO', 'TNUSRB', 'SSC', 'Railway', 'Banking', 'UPSC'];
 const STAGES = ['Prelims', 'Mains', 'Interview'];
@@ -59,40 +61,60 @@ const UserPapers = () => {
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-10">
       
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-indigo-600 to-purple-900 text-white p-8 md:p-12 shadow-2xl"
-      >
-        <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
-          <FileText size={240} />
-        </div>
-        <div className="relative z-10 max-w-3xl space-y-4">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">Previous Year Papers</h1>
-          <p className="text-lg md:text-xl text-indigo-100 max-w-2xl leading-relaxed">
-            Master your exams by practicing with authentic previous year question papers.
-          </p>
-        </div>
-      </motion.div>
+      <PageHeader 
+        title="Previous Year Papers" 
+        description="Master your exams by practicing with authentic previous year question papers." 
+      />
 
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 shadow-sm space-y-6">
         
-        {/* Exam Tabs (Scrollable) */}
-        <div className="flex overflow-x-auto border-b border-slate-200 dark:border-slate-800 pb-6 scrollbar-hide">
-          <div className="inline-flex bg-slate-100 dark:bg-slate-950 p-1.5 rounded-2xl whitespace-nowrap min-w-max mx-auto">
-            {EXAMS.map(exam => (
-              <button
-                key={exam}
-                onClick={() => setSelectedExam(exam)}
-                className={`px-6 py-3 rounded-xl text-sm font-bold transition-all ${
-                  selectedExam === exam 
-                    ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm' 
-                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-                }`}
-              >
-                {exam}
-              </button>
-            ))}
+        {/* Exam Tabs Selector Container */}
+        <div className="border-b border-slate-200 dark:border-slate-800 pb-6">
+          {/* Desktop Version: wrap in rows, flex container */}
+          <div className="hidden md:flex flex-wrap gap-2.5 justify-center w-full">
+            {EXAMS.map(exam => {
+              const isActive = selectedExam === exam;
+              return (
+                <button
+                  key={exam}
+                  onClick={() => setSelectedExam(exam)}
+                  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${
+                    isActive 
+                      ? 'bg-gradient-to-tr from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-600/10' 
+                      : 'bg-slate-50 dark:bg-slate-950 text-slate-500 hover:text-slate-900 dark:hover:text-white border border-slate-200/50 dark:border-slate-900 hover:border-slate-300 dark:hover:border-slate-800'
+                  }`}
+                >
+                  {exam}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Mobile Version: Horizontal scroll without scrollbar */}
+          <div className="flex md:hidden overflow-x-auto gap-2 pb-1 scrollbar-none select-none snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <style>{`
+              .scrollbar-none::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
+            <div className="flex gap-2 min-w-max px-1">
+              {EXAMS.map(exam => {
+                const isActive = selectedExam === exam;
+                return (
+                  <button
+                    key={exam}
+                    onClick={() => setSelectedExam(exam)}
+                    className={`snap-center px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 min-h-[44px] ${
+                      isActive 
+                        ? 'bg-gradient-to-tr from-indigo-600 to-purple-600 text-white shadow-md' 
+                        : 'bg-slate-50 dark:bg-slate-950 text-slate-500 hover:text-slate-900 dark:hover:text-white border border-slate-200/50 dark:border-slate-900'
+                    }`}
+                  >
+                    {exam}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -111,37 +133,37 @@ const UserPapers = () => {
             />
           </div>
 
-          <div className="flex w-full xl:w-auto flex-wrap gap-4 items-center justify-between xl:justify-end">
-            <div className="flex flex-wrap gap-3">
-              <select 
-                value={selectedStage} 
-                onChange={e => setSelectedStage(e.target.value)} 
-                className="px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-indigo-500 text-sm font-medium text-slate-700 dark:text-slate-300"
-              >
-                <option value="All">All Stages</option>
-                {STAGES.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
+          <div className="flex flex-col xl:flex-row w-full xl:w-auto gap-4 items-center justify-between xl:justify-end">
+            <div className="flex flex-col sm:flex-row w-full lg:w-auto gap-3">
+              <div className="w-full sm:w-36">
+                <CustomSelect 
+                  value={selectedStage} 
+                  onChange={e => setSelectedStage(e.target.value)} 
+                  options={['All', ...STAGES].map(c => ({ value: c, label: c === 'All' ? 'All Stages' : c }))}
+                  placeholder="All Stages"
+                />
+              </div>
 
-              <select 
-                value={selectedType} 
-                onChange={e => setSelectedType(e.target.value)} 
-                className="px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-indigo-500 text-sm font-medium text-slate-700 dark:text-slate-300"
-              >
-                <option value="All">All Types</option>
-                {TYPES.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
+              <div className="w-full sm:w-36">
+                <CustomSelect 
+                  value={selectedType} 
+                  onChange={e => setSelectedType(e.target.value)} 
+                  options={['All', ...TYPES].map(s => ({ value: s, label: s === 'All' ? 'All Types' : s }))}
+                  placeholder="All Types"
+                />
+              </div>
 
-              <select 
-                value={selectedYear} 
-                onChange={e => setSelectedYear(e.target.value)} 
-                className="px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-indigo-500 text-sm font-medium text-slate-700 dark:text-slate-300"
-              >
-                <option value="All">All Years</option>
-                {YEARS.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
+              <div className="w-full sm:w-32">
+                <CustomSelect 
+                  value={selectedYear} 
+                  onChange={e => setSelectedYear(e.target.value)} 
+                  options={['All', ...YEARS].map(s => ({ value: s, label: s === 'All' ? 'All Years' : s }))}
+                  placeholder="All Years"
+                />
+              </div>
             </div>
 
-            <div className="flex items-center bg-slate-100 dark:bg-slate-950 p-1 rounded-xl">
+            <div className="flex items-center justify-center w-full sm:w-auto bg-slate-100 dark:bg-slate-950 p-1 rounded-xl">
               <button 
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-600 dark:text-indigo-400' : 'text-slate-500'}`}
@@ -176,8 +198,8 @@ const UserPapers = () => {
           layout
           className={
             viewMode === 'grid' 
-              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-              : "flex flex-col gap-4"
+              ? "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6"
+              : "flex flex-col gap-3"
           }
         >
           <AnimatePresence>
@@ -189,12 +211,16 @@ const UserPapers = () => {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
                 key={paper._id} 
-                className={`group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden hover:shadow-xl hover:shadow-indigo-500/5 hover:border-indigo-500/30 transition-all duration-300 ${
-                  viewMode === 'list' ? 'flex flex-row items-center p-4 gap-6' : 'flex flex-col relative'
+                className={`group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl md:rounded-3xl overflow-hidden hover:shadow-xl transition-all duration-300 ${
+                  viewMode === 'list' 
+                    ? 'flex flex-row items-center p-2.5 sm:p-4 gap-3 sm:gap-5 h-auto sm:h-[110px]' 
+                    : 'flex flex-col relative h-full'
                 }`}
               >
                 <div className={`${
-                  viewMode === 'list' ? 'w-24 h-32 rounded-xl flex-shrink-0' : 'w-full aspect-[4/5] relative'
+                  viewMode === 'list' 
+                    ? 'w-[64px] h-[86px] sm:w-[72px] sm:h-[96px] rounded-lg sm:rounded-xl flex-shrink-0' 
+                    : 'w-full aspect-[4/5] relative'
                 } bg-slate-100 dark:bg-slate-950 overflow-hidden`}>
                   <img 
                     src={paper.thumbnail || `https://placehold.co/400x600/e2e8f0/1e293b?text=${encodeURIComponent(paper.exam)}`} 
@@ -207,37 +233,51 @@ const UserPapers = () => {
                   )}
                 </div>
 
-                <div className={`flex flex-col justify-between flex-grow ${viewMode === 'grid' ? 'p-5' : ''}`}>
-                  <div>
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      <span className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+                <div className={`flex flex-grow ${
+                  viewMode === 'list' 
+                    ? 'flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 min-w-0' 
+                    : 'flex-col justify-between p-3 sm:p-5'
+                }`}>
+                  <div className={`${viewMode === 'list' ? 'flex-1 min-w-0' : ''}`}>
+                    <div className={`flex gap-1.5 sm:gap-2 ${viewMode === 'list' ? 'mb-1 sm:mb-1.5' : 'mb-1.5 sm:mb-2'}`}>
+                      <span className="px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[8px] sm:text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                         {paper.stage}
                       </span>
-                      <span className="px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                      <span className="px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-[8px] sm:text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
                         {paper.year}
                       </span>
                     </div>
-                    <h4 className={`font-bold text-slate-900 dark:text-white leading-tight ${viewMode === 'list' ? 'text-xl mb-1' : 'text-lg mb-2'}`}>
+                    <h4 className={`font-bold text-slate-900 dark:text-white leading-tight truncate ${
+                      viewMode === 'list' ? 'text-sm sm:text-base' : 'text-sm sm:text-lg mb-1 sm:mb-2 line-clamp-2 w-full whitespace-normal'
+                    }`}>
                       {paper.title}
                     </h4>
                     {viewMode === 'list' && (
-                      <p className="text-sm text-slate-500 mb-4">{paper.paperType}</p>
+                      <p className="text-[10px] sm:text-xs text-slate-500 truncate">{paper.paperType}</p>
                     )}
                   </div>
 
-                  <div className={`flex items-center gap-3 mt-4 ${viewMode === 'list' ? 'w-full max-w-sm' : ''}`}>
+                  <div className={`flex items-center gap-1.5 sm:gap-3 flex-shrink-0 ${
+                    viewMode === 'list' 
+                      ? 'w-full sm:w-auto justify-end mt-1 sm:mt-0' 
+                      : 'mt-3 sm:mt-4'
+                  }`}>
                     <button 
                       onClick={(e) => handleDownload(e, paper.previewUrl || paper.driveLink)}
-                      className="flex-1 flex items-center justify-center gap-2 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 font-bold py-2.5 px-4 rounded-xl transition-colors"
+                      className={`flex items-center justify-center gap-1.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 font-bold rounded-xl transition-colors ${
+                        viewMode === 'list' ? 'px-4 py-2 text-xs flex-1 sm:flex-none' : 'flex-1 py-2 sm:py-3 px-2 sm:px-4 min-h-[36px] sm:min-h-[44px] text-xs sm:text-sm'
+                      }`}
                     >
-                      <Eye size={18} /> <span className="text-sm">Preview</span>
+                      <Eye size={viewMode === 'list' ? 14 : 18} /> <span>Preview</span>
                     </button>
                     <button 
                       onClick={(e) => handleDownload(e, paper.downloadUrl || paper.driveLink)}
-                      className="flex items-center justify-center p-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors"
+                      className={`flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors ${
+                        viewMode === 'list' ? 'p-2' : 'p-2 sm:p-3 min-h-[36px] sm:min-h-[44px] min-w-[36px] sm:min-w-[44px]'
+                      }`}
                       title="Download PDF"
                     >
-                      <Download size={18} />
+                      <Download size={viewMode === 'list' ? 14 : 18} />
                     </button>
                   </div>
                 </div>

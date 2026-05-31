@@ -57,6 +57,93 @@ Instructions:
 9. Focus on educational guidance.
 10. Format responses using headings and bullets.`;
 
+// @desc    Send a guest message & get Groq response (No DB saving)
+// @route   POST /api/ai/guest-chat
+// @access  Public
+export const sendGuestMessage = async (req, res) => {
+  const { message, chatHistory = [] } = req.body;
+  const ip = req.ip || req.connection.remoteAddress;
+
+  if (!checkRateLimit(ip)) {
+    return res.status(429).json({ success: false, message: 'Rate limit exceeded.' });
+  }
+
+  if (!message || typeof message !== 'string' || message.trim() === '') {
+    return res.status(400).json({ success: false, message: 'Message content cannot be empty.' });
+  }
+  if (message.length > 2000) {
+    return res.status(400).json({ success: false, message: 'Message length cannot exceed 2000 characters.' });
+  }
+
+  const sanitizedMessage = message.trim();
+
+  try {
+    const groqMessages = [{ role: 'system', content: SYSTEM_PROMPT }];
+
+    chatHistory.forEach(msg => {
+      if (msg.role && msg.content) {
+        groqMessages.push({ role: msg.role, content: msg.content });
+      }
+    });
+
+    groqMessages.push({ role: 'user', content: sanitizedMessage });
+
+    const aiResponseContent = await getGroqReply(groqMessages);
+
+    res.status(200).json({
+      success: true,
+      message: { role: 'assistant', content: aiResponseContent }
+    });
+  } catch (error) {
+    console.error('Guest AI Chat Error:', error);
+    res.status(500).json({ success: false, message: 'Failed to get AI response' });
+  }
+};
+
+// @desc    Import a guest chat into a real session
+// @route   POST /api/ai/import-guest-chat
+// @access  Private
+export const importGuestChat = async (req, res) => {
+  const userId = req.user.id;
+  const { chatHistory = [] } = req.body;
+
+  if (!chatHistory || chatHistory.length === 0) {
+    return res.status(400).json({ success: false, message: 'No chat history provided.' });
+  }
+
+  try {
+    // Find the first user message for the title
+    const firstUserMsg = chatHistory.find(m => m.role === 'user');
+    const titleText = firstUserMsg ? firstUserMsg.content : 'Imported Guest Chat';
+    
+    const title = titleText.length > 40 
+      ? titleText.substring(0, 40) + '...' 
+      : titleText;
+
+    const session = await ChatSession.create({
+      userId,
+      title
+    });
+
+    // Save all messages to this session
+    const messageDocs = chatHistory.map(msg => ({
+      sessionId: session._id,
+      role: msg.role === 'user' ? 'user' : 'assistant',
+      content: msg.content
+    }));
+
+    await ChatMessage.insertMany(messageDocs);
+
+    res.status(201).json({
+      success: true,
+      sessionId: session._id
+    });
+  } catch (error) {
+    console.error('Import Guest Chat Error:', error);
+    res.status(500).json({ success: false, message: 'Failed to import chat' });
+  }
+};
+
 // @desc    Send a message & get Groq response
 // @route   POST /api/ai/chat
 // @access  Private

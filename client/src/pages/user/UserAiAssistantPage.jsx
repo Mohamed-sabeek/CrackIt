@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, History, ChevronLeft, ChevronRight, PanelLeftOpen, PanelLeftClose } from 'lucide-react';
 import api from '../../config/api';
 import ChatSidebar from '../../components/user/ai/ChatSidebar';
 import ChatWindow from '../../components/user/ai/ChatWindow';
@@ -30,8 +31,46 @@ const UserAiAssistantPage = () => {
   };
 
   useEffect(() => {
-    fetchSessions();
+    const importGuestChat = async () => {
+      const guestChat = localStorage.getItem('guest_ai_chat');
+      if (guestChat) {
+        try {
+          const parsedChat = JSON.parse(guestChat);
+          localStorage.removeItem('guest_ai_chat');
+          localStorage.removeItem('guest_ai_questions');
+          
+          if (parsedChat.length > 0) {
+            setLoading(true);
+            const res = await api.post('/ai/import-guest-chat', { chatHistory: parsedChat });
+            if (res.data.success) {
+              await fetchSessions();
+              await selectSession(res.data.sessionId);
+              return; // skip the normal fetchSessions call below
+            }
+          }
+        } catch (err) {
+          console.error('Failed to import guest chat', err);
+        } finally {
+          setLoading(false);
+        }
+      }
+      fetchSessions();
+    };
+
+    importGuestChat();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Handle Escape key to close mobile sidebar
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isMobileSidebarOpen) {
+        setIsMobileSidebarOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isMobileSidebarOpen]);
 
   // 2. Fetch all messages in the selected session
   const selectSession = async (sessionId) => {
@@ -133,15 +172,9 @@ const UserAiAssistantPage = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-10rem)] border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden flex bg-white dark:bg-slate-950 shadow-sm relative">
+    <div className="h-[calc(100dvh-88px)] -mx-6 -mt-4 -mb-6 border-t md:h-[calc(100dvh-10rem)] md:m-0 md:border border-slate-200 dark:border-slate-800 md:rounded-3xl overflow-hidden flex bg-white dark:bg-slate-950 shadow-sm relative">
       
-      {/* Mobile Toggle Trigger Button */}
-      <button
-        onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-        className="absolute top-4 left-4 z-40 p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl md:hidden text-slate-700 dark:text-slate-200 border-0 cursor-pointer shadow-sm"
-      >
-        {isMobileSidebarOpen ? <X size={16} /> : <Menu size={16} />}
-      </button>
+
 
       {/* Desktop sidebar */}
       <div className="hidden md:block h-full">
@@ -155,20 +188,34 @@ const UserAiAssistantPage = () => {
       </div>
 
       {/* Mobile drawer overlay sidebar */}
-      {isMobileSidebarOpen && (
-        <div className="absolute inset-0 z-30 flex md:hidden bg-slate-900/40 backdrop-blur-xs">
-          <div className="w-80 h-full animate-slide-in">
-            <ChatSidebar
-              sessions={sessions}
-              currentSessionId={currentSessionId}
-              onSelectSession={selectSession}
-              onDeleteSession={deleteSession}
-              onNewChat={resetToNewChat}
-            />
-          </div>
-          <div className="flex-1" onClick={() => setIsMobileSidebarOpen(false)} />
-        </div>
-      )}
+      <AnimatePresence>
+        {isMobileSidebarOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 z-30 flex md:hidden bg-slate-900/40 backdrop-blur-xs"
+          >
+            <motion.div 
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="w-[80%] max-w-[320px] h-full"
+            >
+              <ChatSidebar
+                sessions={sessions}
+                currentSessionId={currentSessionId}
+                onSelectSession={selectSession}
+                onDeleteSession={deleteSession}
+                onNewChat={resetToNewChat}
+              />
+            </motion.div>
+            <div className="flex-1" onClick={() => setIsMobileSidebarOpen(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main chat window container */}
       <div className="flex-1 flex flex-col justify-between h-full min-w-0">
@@ -181,6 +228,7 @@ const UserAiAssistantPage = () => {
           errorMessage={errorMessage}
           onSelectSuggestion={handleSendMessage}
           activeSessionTitle={currentSessionTitle}
+          onToggleMobileSidebar={() => setIsMobileSidebarOpen(prev => !prev)}
         />
 
         {/* Input box bottom panel */}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Menu, X, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import logoImg from '../../assets/crackit-logo.webp';
 
 const Navbar = ({ sectionRefs }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -99,9 +100,9 @@ const Navbar = ({ sectionRefs }) => {
             className="flex items-center gap-2.5 cursor-pointer group"
           >
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl blur-sm opacity-50 group-hover:opacity-80 transition-opacity"></div>
-              <div className="relative bg-gradient-to-tr from-blue-600 to-indigo-600 text-white p-2 rounded-xl shadow-md flex items-center justify-center transition-transform group-hover:scale-105">
-                <BookOpen size={18} />
+              <div className="absolute inset-0 bg-blue-600/20 rounded-xl blur-sm opacity-50 group-hover:opacity-80 transition-opacity"></div>
+              <div className="relative w-8 h-8 rounded-xl shadow-md flex items-center justify-center transition-transform group-hover:scale-105 overflow-hidden ring-1 ring-slate-200">
+                <img src={logoImg} alt="Crackit" className="w-full h-full object-cover" />
               </div>
             </div>
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 tracking-tight">
@@ -195,8 +196,8 @@ const Navbar = ({ sectionRefs }) => {
             >
               <div className="flex items-center justify-between pb-6 border-b border-slate-100 mb-8">
                 <div className="flex items-center gap-2">
-                  <div className="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white p-2 rounded-xl">
-                    <BookOpen size={16} />
+                  <div className="w-7 h-7 rounded-lg overflow-hidden ring-1 ring-slate-200">
+                    <img src={logoImg} alt="Crackit" className="w-full h-full object-cover" />
                   </div>
                   <span className="text-lg font-bold text-slate-900">Crackit</span>
                 </div>

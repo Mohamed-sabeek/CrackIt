@@ -36,8 +36,11 @@ import UserManagementPage from '../pages/admin/UserManagementPage';
 import ExamManagementPage from '../pages/admin/ExamManagementPage';
 import MockTestsManagementPage from '../pages/admin/MockTestsManagementPage';
 import AdminStudyLibraryPage from '../pages/admin/AdminStudyLibraryPage';
-import SettingsPage from '../pages/admin/SettingsPage';
 import AdminPapersPage from '../pages/admin/AdminPapersPage';
+import AdminCurrentAffairsPage from '../pages/admin/AdminCurrentAffairsPage';
+import UserCurrentAffairsPage from '../pages/user/UserCurrentAffairsPage';
+import AdminExamUpdatesPage from '../pages/admin/AdminExamUpdatesPage';
+import UserExamUpdatesPage from '../pages/user/UserExamUpdatesPage';
 
 const AppRoutes = () => {
   return (
@@ -83,6 +86,8 @@ const AppRoutes = () => {
         
         <Route path="results" element={<ResultsPage />} />
         <Route path="results/:id" element={<AttemptDetailsPage />} />
+        <Route path="current-affairs" element={<UserCurrentAffairsPage />} />
+        <Route path="exam-updates" element={<UserExamUpdatesPage />} />
       </Route>
 
       {/* Redirect direct /ai-assistant to the dashboard sub-route */}
@@ -107,7 +112,9 @@ const AppRoutes = () => {
         <Route path="mocktests" element={<MockTestsManagementPage />} />
         <Route path="library" element={<AdminStudyLibraryPage />} />
         <Route path="papers" element={<AdminPapersPage />} />
-        <Route path="settings" element={<SettingsPage />} />
+        <Route path="current-affairs" element={<AdminCurrentAffairsPage />} />
+        <Route path="exam-updates" element={<AdminExamUpdatesPage />} />
+
         {/* Fallback to admin/dashboard */}
         <Route index element={<Navigate to="dashboard" replace />} />
       </Route>

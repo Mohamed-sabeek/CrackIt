@@ -4,6 +4,7 @@ import { HelpCircle, Clock, PlayCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import * as mockTestService from '../../../services/mockTestService';
 import { useAuth } from '../../../hooks/useAuth';
+import PageHeader from '../../common/PageHeader';
 
 const UserMockTests = () => {
   const [tests, setTests] = useState([]);
@@ -31,28 +32,17 @@ const UserMockTests = () => {
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-10">
       
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-indigo-600 to-purple-900 text-white p-8 md:p-12 shadow-2xl"
-      >
-        <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
-          <HelpCircle size={240} />
-        </div>
-        <div className="relative z-10 max-w-3xl space-y-4">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">Practice Center</h1>
-          <p className="text-lg md:text-xl text-indigo-100 max-w-2xl leading-relaxed">
-            Enhance your preparation with daily practice, subject-wise tests, and full mock exams.
-          </p>
-        </div>
-      </motion.div>
+      <PageHeader 
+        title="Practice Center" 
+        description="Enhance your preparation with daily practice, subject-wise tests, and full mock exams." 
+      />
 
-      <div className="flex bg-slate-100 dark:bg-slate-900 p-1.5 rounded-2xl w-fit mx-auto shadow-sm border border-slate-200 dark:border-slate-800">
+      <div className="flex bg-slate-100 dark:bg-slate-900 p-1.5 rounded-2xl w-full sm:w-fit mx-auto shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto scrollbar-none snap-x snap-mandatory">
         {['daily', 'subject', 'full'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-8 py-3 rounded-xl text-sm font-bold capitalize transition-all ${
+            className={`snap-center flex-1 sm:flex-none px-6 md:px-8 py-3 rounded-xl text-sm font-bold capitalize transition-all min-h-[44px] min-w-max ${
               activeTab === tab 
                 ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm' 
                 : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
@@ -103,7 +93,7 @@ const UserMockTests = () => {
 
               <button 
                 onClick={() => navigate(`/mock-tests/${test._id}`)}
-                className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold transition-colors"
+                className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold transition-colors min-h-[44px]"
               >
                 <PlayCircle size={18} />
                 Start Test

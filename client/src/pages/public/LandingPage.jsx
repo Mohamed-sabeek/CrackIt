@@ -9,6 +9,7 @@ import Features from '../../sections/Features';
 import AIAssistant from '../../sections/AIAssistant';
 import WhyChooseUs from '../../sections/WhyChooseUs';
 import CTA from '../../sections/CTA';
+import About from '../../sections/About';
 import Footer from '../../components/common/Footer';
 
 const LandingPage = () => {
@@ -66,11 +67,12 @@ const LandingPage = () => {
           <AIAssistant />
         </div>
         <WhyChooseUs />
+        <div ref={aboutRef} className="scroll-mt-28">
+          <About />
+        </div>
         <CTA />
       </main>
-      <div ref={aboutRef} className="scroll-mt-28">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   );
 };

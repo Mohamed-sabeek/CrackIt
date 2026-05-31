@@ -1,76 +1,78 @@
-# Crackit - TNPSC Preparation Platform
+# CrackIt Platform
 
-Crackit is a modern, premium EdTech platform specifically designed for TNPSC (Tamil Nadu Public Service Commission) exam preparation. It features a robust administration dashboard for managing content and a dynamic, distraction-free student portal for learning and practice.
+CrackIt is a comprehensive, production-ready full-stack learning platform designed to provide rigorous mock tests, AI-assisted mentorship, current affairs updates, and study materials for competitive exams.
 
-## 🚀 Features
+## Features
 
-### Student Portal (User Dashboard)
-- **Practice Center:** Take daily challenges, subject-wise quizzes, and full-length Mock Tests.
-- **Test Interface:** A state-of-the-art test engine with a countdown timer, question palette (Answered, Unanswered, Marked for Review), and instant grading.
-- **Detailed Analytics:** Get deep insights into past attempts with a detailed question-by-question breakdown, including correct/incorrect highlights and explanations.
-- **Study Library:** Browse and access study materials and PDFs for various subjects.
-- **Previous Year Papers:** View and download official past papers for all TNPSC categories (Group 1, 2, 4, VAO, etc.).
-- **Premium UI:** Built with Framer Motion and Tailwind CSS for a responsive, modern glassmorphism aesthetic with Dark Mode support.
+- **Robust Authentication:** Secure JWT-based authentication with role-based access control (Admin/Student).
+- **Comprehensive Dashboards:** Tailored dashboards for Administrators to monitor platform metrics and for Students to track their learning progress.
+- **Mock Tests Engine:** Full-fledged exam simulation with timer, interactive questions, and detailed attempt analysis.
+- **AI Mentor:** Integrated AI conversational tutor capable of explaining complex topics and providing customized study paths.
+- **Content Library:** Centralized repository for Study Materials, Previous Papers, and Current Affairs.
+- **Exam Updates:** Real-time push for notifications and status regarding upcoming competitive exams.
+- **Dark Mode Support:** Fully responsive, accessible, and aesthetically premium Dark Mode integration.
 
-### Admin Dashboard
-- **Mock Test Management:** Create, publish, and manage tests.
-- **Question Bank Bulk Upload:** Easily drag-and-drop CSV or Excel (`.xlsx`) files to instantly populate hundreds of questions into the database.
-- **Study Library & Paper Management:** Upload, link, and categorize PDFs securely using Google Drive integration.
-- **User Management:** Monitor active registrations, track student progress, and manage candidate accounts.
-- **Operations Control:** Real-time metrics and toggles to control module visibility.
+## Tech Stack
 
-## 🛠️ Technology Stack
+- **Frontend:** React 19, Vite, Tailwind CSS v4, Framer Motion, Recharts, Lucide React
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB Atlas, Mongoose
+- **Authentication:** JSON Web Tokens (JWT), bcryptjs
+- **AI Integration:** Groq API (Llama 3.3 for conversational AI Mentor)
 
-**Frontend:**
-- React (Vite)
-- Tailwind CSS
-- Framer Motion (Animations)
-- React Router DOM
-- Lucide React (Icons)
+## Architecture
 
-**Backend:**
-- Node.js & Express.js
-- MongoDB Atlas & Mongoose
-- JSON Web Token (JWT) Authentication
-- Multer & XLSX (For Bulk Upload processing)
+The application follows a standard MERN stack architecture. The backend is an Express REST API serving structured JSON, secured by JWT middleware. The frontend is a React Single Page Application (SPA) utilizing modular components, context-based state management, and optimized routing (via React Router).
 
-## 📦 Project Structure
-
-```text
-Crack_It/
-├── client/          # React Frontend (Vite)
-│   ├── src/
-│   │   ├── components/  # Reusable UI elements
-│   │   ├── pages/       # Admin & User Page Views
-│   │   ├── layouts/     # Dashboard Wrappers
-│   │   └── services/    # API calls to backend
-├── server/          # Node.js Backend
-│   ├── models/      # Mongoose Schemas (User, Question, Test, etc.)
-│   ├── controllers/ # Business logic
-│   ├── routes/      # Express API routes
-│   └── middleware/  # JWT Auth & Admin protection
-```
-
-## ⚙️ Getting Started
+## Installation & Run Locally
 
 ### Prerequisites
-- Node.js installed
-- MongoDB URI
+- Node.js (v18 or higher)
+- MongoDB Atlas cluster (or local MongoDB)
 
-### 1. Backend Setup
-1. Navigate to the `server` directory: `cd server`
-2. Install dependencies: `npm install`
-3. Create a `.env` file in the `server` directory with:
-   ```env
-   PORT=5000
-   MONGO_URI=your_mongodb_connection_string
-   JWT_SECRET=your_jwt_secret
+### Environment Variables
+Create a `.env` file in the `server/` directory:
+```env
+PORT=5000
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+FRONTEND_URL=http://localhost:5173
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+Create a `.env` file in the `client/` directory:
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+### Steps
+
+1. Clone the repository
+2. Install Server dependencies:
+   ```bash
+   cd server
+   npm install
    ```
-4. Start the server: `npm run dev`
+3. Install Client dependencies:
+   ```bash
+   cd client
+   npm install
+   ```
+4. Start the development servers:
+   - Server: `npm run dev`
+   - Client: `npm run dev`
 
-### 2. Frontend Setup
-1. Navigate to the `client` directory: `cd client`
-2. Install dependencies: `npm install`
-3. Start the Vite development server: `npm run dev`
+## Deployment
 
-The frontend will run on `http://localhost:5173` and automatically proxy API requests to the backend.
+- **Frontend:** Optimized for deployment on Vercel or Netlify. Ensure `VITE_API_URL` is set to the production backend URL.
+- **Backend:** Optimized for deployment on Render, Heroku, or DigitalOcean. Ensure `FRONTEND_URL` matches the production client URL for strict CORS handling.
+
+## License
+
+This project is proprietary and confidential.
+
+## Future Roadmap
+
+- Advanced Peer-to-Peer Leaderboards
+- Video Course Integration
+- Mobile Application (React Native)

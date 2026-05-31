@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { ArrowRight, Book, Briefcase, Building, Shield, Stethoscope, Microscope, ShieldAlert, Landmark } from 'lucide-react';
 
 const exams = [
@@ -110,9 +111,9 @@ const Exams = () => {
 
               <div>
                 {exam.isActive ? (
-                  <button className="flex items-center text-sm font-semibold text-blue-600 group-hover:text-blue-700 transition-colors">
+                  <Link to="/register" className="flex items-center text-sm font-semibold text-blue-600 group-hover:text-blue-700 transition-colors">
                     Explore {exam.title} <ArrowRight size={16} className="ml-1.5 group-hover:translate-x-0.5 transition-transform" />
-                  </button>
+                  </Link>
                 ) : (
                   <div className="relative group/tooltip inline-block w-full">
                     <button 

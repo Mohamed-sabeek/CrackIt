@@ -1,5 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MessageSquare, Plus, Trash2, Bot } from 'lucide-react';
+import aiLogo from '../../../assets/crackit-ai-logo.webp';
+
+const AiAvatar = ({ className = "w-full h-full object-cover rounded-lg" }) => {
+  const [imageError, setImageError] = useState(false);
+  
+  if (!imageError) {
+    return (
+      <img 
+        src={aiLogo} 
+        alt="CrackIt AI" 
+        onError={() => setImageError(true)} 
+        className={className}
+      />
+    );
+  }
+  return <Bot className="w-1/2 h-1/2 text-white" />;
+};
 
 const ChatSidebar = ({
   sessions = [],
@@ -9,7 +26,7 @@ const ChatSidebar = ({
   onNewChat
 }) => {
   return (
-    <aside className="w-80 border-r border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 h-full flex flex-col justify-between flex-shrink-0">
+    <aside className="w-full h-full md:w-80 border-r border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex flex-col justify-between flex-shrink-0">
       
       {/* Top action header */}
       <div className="p-4 border-b border-slate-200 dark:border-slate-800">
@@ -38,7 +55,7 @@ const ChatSidebar = ({
                 className={`group flex items-center justify-between rounded-xl px-3 py-2.5 transition-all text-xs font-semibold cursor-pointer border border-transparent ${
                   isActive
                     ? 'bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400'
-                    : 'text-slate-600 dark:text-slate-450 hover:bg-slate-100 dark:hover:bg-slate-900/60'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900/60'
                 }`}
                 onClick={() => onSelectSession(session._id)}
               >
@@ -65,12 +82,12 @@ const ChatSidebar = ({
       {/* Footer Branding Info */}
       <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-950/40">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-            <Bot size={14} />
+          <div className="w-7 h-7 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center overflow-hidden hover:scale-105 transition-transform duration-200">
+            <AiAvatar className="w-full h-full object-cover rounded-lg" />
           </div>
           <div>
-            <h5 className="text-[10px] font-bold text-slate-700 dark:text-slate-200">CrackIt AI Assistant</h5>
-            <p className="text-[8px] text-slate-450 font-medium">Powered by Groq Llama-3.3</p>
+            <h5 className="text-[10px] font-bold text-slate-700 dark:text-slate-200">CrackIt AI Mentor</h5>
+            <p className="text-[8px] text-slate-400 font-medium">Powered by Groq Llama 3.3</p>
           </div>
         </div>
       </div>

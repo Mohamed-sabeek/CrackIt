@@ -34,7 +34,8 @@ server-error.log
 .DS_Store?
 ._*
 .Spotlight-V100
-.Trashes
+.cache/
+*.csv
 ehthumbs.db
 Thumbs.db
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
+import CustomSelect from '../../common/CustomSelect';
 
 const EXAMS = ['All', 'TNPSC Group 1', 'TNPSC Group 2', 'TNPSC Group 2A', 'TNPSC Group 4', 'VAO', 'TNUSRB', 'SSC', 'Railway', 'Banking', 'UPSC'];
 const STAGES = ['All', 'Prelims', 'Mains', 'Interview'];
@@ -23,38 +24,42 @@ const PaperFilters = ({ filters, setFilters }) => {
         />
       </div>
       
-      <div className="flex flex-wrap gap-3">
-        <select 
-          className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
-          value={filters.exam}
-          onChange={(e) => setFilters({ ...filters, exam: e.target.value })}
-        >
-          {EXAMS.map(exam => <option key={exam} value={exam}>{exam === 'All' ? 'All Exams' : exam}</option>)}
-        </select>
+      <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+        <div className="w-full sm:w-36">
+          <CustomSelect 
+            value={filters.exam}
+            onChange={(e) => setFilters({ ...filters, exam: e.target.value })}
+            options={EXAMS.map(exam => ({ value: exam, label: exam === 'All' ? 'All Exams' : exam }))}
+            placeholder="All Exams"
+          />
+        </div>
         
-        <select 
-          className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
-          value={filters.stage}
-          onChange={(e) => setFilters({ ...filters, stage: e.target.value })}
-        >
-          {STAGES.map(stage => <option key={stage} value={stage}>{stage === 'All' ? 'All Stages' : stage}</option>)}
-        </select>
+        <div className="w-full sm:w-36">
+          <CustomSelect 
+            value={filters.stage}
+            onChange={(e) => setFilters({ ...filters, stage: e.target.value })}
+            options={STAGES.map(stage => ({ value: stage, label: stage === 'All' ? 'All Stages' : stage }))}
+            placeholder="All Stages"
+          />
+        </div>
 
-        <select 
-          className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
-          value={filters.paperType}
-          onChange={(e) => setFilters({ ...filters, paperType: e.target.value })}
-        >
-          {TYPES.map(type => <option key={type} value={type}>{type === 'All' ? 'All Types' : type}</option>)}
-        </select>
+        <div className="w-full sm:w-36">
+          <CustomSelect 
+            value={filters.paperType}
+            onChange={(e) => setFilters({ ...filters, paperType: e.target.value })}
+            options={TYPES.map(type => ({ value: type, label: type === 'All' ? 'All Types' : type }))}
+            placeholder="All Types"
+          />
+        </div>
 
-        <select 
-          className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
-          value={filters.year}
-          onChange={(e) => setFilters({ ...filters, year: e.target.value })}
-        >
-          {YEARS.map(year => <option key={year} value={year}>{year === 'All' ? 'All Years' : year}</option>)}
-        </select>
+        <div className="w-full sm:w-32">
+          <CustomSelect 
+            value={filters.year}
+            onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+            options={YEARS.map(year => ({ value: year, label: year === 'All' ? 'All Years' : year }))}
+            placeholder="All Years"
+          />
+        </div>
       </div>
     </div>
   );

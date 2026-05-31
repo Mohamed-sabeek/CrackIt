@@ -1,36 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, Zap, Sparkles, BrainCircuit, Send, Lock, X } from 'lucide-react';
-
-const PREDEFINED_RESPONSES = [
-  {
-    keywords: ['constitution', 'polity', 'fundamental', 'right', 'article'],
-    response: "The Indian Constitution is the supreme law of India. For TNPSC, focus heavily on Part III (Fundamental Rights, Articles 12-35), Part IV (DPSP), and the Panchayat Raj system (73rd & 74th Amendments). Samacheer Kalvi 10th Polity is highly recommended!"
-  },
-  {
-    keywords: ['history', 'inm', 'freedom', 'movement', 'british', 'fight'],
-    response: "TNPSC History focuses heavily on the Indian National Movement (INM). Pay special attention to South Indian Rebellions (Vellore Mutiny 1806, Kattabomman, Maruthu Brothers) and the role of Tamil Nadu in the freedom struggle."
-  },
-  {
-    keywords: ['geography', 'river', 'map', 'climate', 'monsoon'],
-    response: "For TNPSC Geography, focus on Tamil Nadu physical geography: the Western and Eastern Ghats, Kaveri & Vaigai river basins, and soil distribution. Understanding the Northeast Monsoon's impact on Tamil Nadu agriculture is crucial."
-  },
-  {
-    keywords: ['tips', 'prep', 'study', 'how to', 'syllabus', 'book'],
-    response: "Here are top TNPSC prep tips: 1) Study Samacheer Kalvi school books (Grades 6-10 thoroughly, 11-12 selectively). 2) Practice daily aptitude (mental ability). 3) Read dynamic current affairs daily. 4) Practice mock tests."
-  }
-];
+import { useNavigate } from 'react-router-dom';
+import api from '../config/api';
+import aiLogoImg from '../assets/crackit-ai-logo.webp';
 
 const AIAssistant = () => {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([
-    { sender: 'ai', text: "Hello! I am Crackit AI, your personal study mentor. Ask me any question about the TNPSC syllabus, Indian Constitution, History, Geography, or prep tips!" }
+    { role: 'assistant', content: "Hello! I am Crackit AI, your personal study mentor. Ask me any question about the TNPSC syllabus, Indian Constitution, History, Geography, or prep tips!" }
   ]);
   const [inputText, setInputText] = useState('');
   const [guestMessageCount, setGuestMessageCount] = useState(0);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const chatContainerRef = useRef(null);
+
+  useEffect(() => {
+    const savedChat = localStorage.getItem('guest_ai_chat');
+    const savedCount = localStorage.getItem('guest_ai_questions');
+    
+    if (savedChat) {
+      try {
+        setMessages(JSON.parse(savedChat));
+      } catch (err) {
+        console.error('Failed to parse guest chat');
+      }
+    }
+    
+    if (savedCount) {
+      setGuestMessageCount(parseInt(savedCount, 10));
+    }
+  }, []);
 
   const scrollToBottom = () => {
     const chatContainer = chatContainerRef.current;
@@ -46,55 +47,52 @@ const AIAssistant = () => {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!inputText.trim()) return;
 
-    // Add user message
-    const userMsg = { sender: 'user', text: inputText };
-    setMessages(prev => [...prev, userMsg]);
-    const currentInput = inputText.toLowerCase();
-    setInputText('');
-
-    // If not logged in and reached limit, trigger lock
-    if (!isLoggedIn && guestMessageCount >= 2) {
-      setTimeout(() => {
-        setIsModalOpen(true);
-      }, 800);
+    if (guestMessageCount >= 2) {
+      setIsModalOpen(true);
       return;
     }
 
-    // Increment message count for guest
-    if (!isLoggedIn) {
-      setGuestMessageCount(prev => prev + 1);
-    }
-
-    // Simulate AI response
+    const userMsg = { role: 'user', content: inputText.trim() };
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
+    localStorage.setItem('guest_ai_chat', JSON.stringify(newMessages));
+    
+    setInputText('');
     setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-      let aiText = "That's an interesting question! To get a complete detailed explanation, customized study plan, and similar practice questions on this topic, let's connect you with a free account.";
 
-      // Check keywords
-      for (const item of PREDEFINED_RESPONSES) {
-        if (item.keywords.some(kw => currentInput.includes(kw))) {
-          aiText = item.response;
-          break;
-        }
+    try {
+      const response = await api.post('/ai/guest-chat', {
+        message: userMsg.content,
+        chatHistory: messages.filter(m => m.role === 'user' || m.role === 'assistant')
+      });
+
+      if (response.data.success) {
+        const aiMsg = response.data.message;
+        const finalMessages = [...newMessages, aiMsg];
+        setMessages(finalMessages);
+        localStorage.setItem('guest_ai_chat', JSON.stringify(finalMessages));
+        
+        const newCount = guestMessageCount + 1;
+        setGuestMessageCount(newCount);
+        localStorage.setItem('guest_ai_questions', newCount.toString());
       }
-
-      setMessages(prev => [...prev, { sender: 'ai', text: aiText }]);
-    }, 1200);
+    } catch (error) {
+      console.error('AI Error:', error);
+      const errorMsg = { role: 'assistant', content: 'Unable to generate response. Please try again.' };
+      setMessages([...newMessages, errorMsg]);
+      // Do not increment count on error
+    } finally {
+      setIsTyping(false);
+    }
   };
 
-  // Simulate user authentication/login directly from the modal to wow the user
-  const handleSimulateLogin = (type) => {
-    setIsLoggedIn(true);
+  const handleAuthRedirect = (path) => {
     setIsModalOpen(false);
-    setMessages(prev => [
-      ...prev,
-      { sender: 'ai', text: `Success! You are now logged in as a ${type === 'register' ? 'new registered user' : 'returning member'}. Unlimited AI Mentor support is now fully activated!` }
-    ]);
+    navigate(path);
   };
 
   return (
@@ -159,14 +157,15 @@ const AIAssistant = () => {
             </ul>
 
             <div className="flex items-center gap-3">
-              <button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-md shadow-blue-500/10 text-sm hover:shadow-lg hover:shadow-blue-500/20">
+              <button 
+                onClick={() => window.scrollTo({ top: document.getElementById('ai')?.offsetTop, behavior: 'smooth' })}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-md shadow-blue-500/10 text-sm hover:shadow-lg hover:shadow-blue-500/20"
+              >
                 Try AI Mentor Now
               </button>
-              {!isLoggedIn && (
-                <span className="text-xs text-slate-400 font-medium italic ml-2">
-                  * Guest preview allows 2 queries.
-                </span>
-              )}
+              <span className="text-xs text-slate-400 font-medium italic ml-2">
+                * Guest preview allows 2 queries.
+              </span>
             </div>
           </motion.div>
 
@@ -184,8 +183,8 @@ const AIAssistant = () => {
               {/* Chat Header */}
               <div className="px-5 py-4 border-b border-slate-200 bg-slate-50/60 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-lg flex items-center justify-center">
-                    <Bot size={16} />
+                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center overflow-hidden ring-1 ring-slate-200 shadow-sm">
+                    <img src={aiLogoImg} alt="Crackit AI" className="w-full h-full object-cover" />
                   </div>
                   <div>
                     <h5 className="text-slate-950 font-bold text-sm">Crackit AI</h5>
@@ -194,30 +193,25 @@ const AIAssistant = () => {
                     </p>
                   </div>
                 </div>
-                {isLoggedIn && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-sm">
-                    Unlimited Active
-                  </span>
-                )}
               </div>
               
               {/* Chat Screen area with blur/lock state */}
               <div 
                 ref={chatContainerRef}
                 className={`p-5 flex-1 overflow-y-auto bg-slate-50/10 flex flex-col gap-4 relative transition-all duration-300 ${
-                  !isLoggedIn && guestMessageCount >= 2 ? 'filter blur-[1.5px] pointer-events-none select-none' : ''
+                  guestMessageCount >= 2 ? 'filter blur-[1.5px] pointer-events-none select-none' : ''
                 }`}
               >
                 {messages.map((msg, index) => (
                   <div 
                     key={index}
                     className={`max-w-[80%] rounded-xl px-4 py-2.5 text-sm leading-relaxed ${
-                      msg.sender === 'user'
+                      msg.role === 'user'
                         ? 'self-end bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-medium rounded-tr-sm shadow-sm'
                         : 'self-start bg-slate-100 text-slate-800 border border-slate-200/50 rounded-tl-sm'
                     }`}
                   >
-                    {msg.text}
+                    {msg.content}
                   </div>
                 ))}
                 
@@ -231,7 +225,7 @@ const AIAssistant = () => {
               </div>
 
               {/* Lock screen overlay */}
-              {!isLoggedIn && guestMessageCount >= 2 && (
+              {guestMessageCount >= 2 && (
                 <div className="absolute inset-0 z-20 bg-slate-900/10 backdrop-blur-xs flex flex-col items-center justify-center p-6 text-center">
                   <div className="bg-white/95 backdrop-blur-md border border-slate-200 p-6 rounded-2xl shadow-xl max-w-sm flex flex-col items-center">
                     <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center mb-4">
@@ -243,13 +237,13 @@ const AIAssistant = () => {
                     </p>
                     <div className="flex gap-2 w-full">
                       <button 
-                        onClick={() => handleSimulateLogin('login')}
+                        onClick={() => handleAuthRedirect('/login')}
                         className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-semibold py-2.5 rounded-lg transition-all shadow-sm"
                       >
                         Login
                       </button>
                       <button 
-                        onClick={() => handleSimulateLogin('register')}
+                        onClick={() => handleAuthRedirect('/register')}
                         className="flex-1 bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 text-xs font-semibold py-2.5 rounded-lg transition-colors"
                       >
                         Register
@@ -260,23 +254,23 @@ const AIAssistant = () => {
               )}
 
               {/* Chat Input */}
-              <form onSubmit={handleSendMessage} className="p-4 border-t border-slate-200 bg-slate-50/50">
+              <form onSubmit={handleSendMessage} className="p-4 border-t border-slate-200 bg-slate-50/50 relative z-30">
                 <div className="bg-white rounded-lg px-3 py-2 flex items-center gap-2.5 border border-slate-200">
                   <input 
                     type="text" 
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     placeholder={
-                      !isLoggedIn && guestMessageCount >= 2 
+                      guestMessageCount >= 2 
                         ? "Chat limit reached. Please authenticate..." 
                         : "Ask about constitution, history, tips..."
                     } 
-                    disabled={!isLoggedIn && guestMessageCount >= 2}
+                    disabled={guestMessageCount >= 2 || isTyping}
                     className="bg-transparent border-none outline-none text-slate-800 flex-1 text-sm disabled:cursor-not-allowed" 
                   />
                   <button 
                     type="submit"
-                    disabled={(!isLoggedIn && guestMessageCount >= 2) || !inputText.trim()}
+                    disabled={guestMessageCount >= 2 || !inputText.trim() || isTyping}
                     className="text-blue-500 hover:text-blue-600 disabled:text-slate-300 disabled:hover:text-slate-300 transition-colors p-1"
                   >
                     <Send size={16} />
@@ -289,7 +283,7 @@ const AIAssistant = () => {
         </div>
       </div>
 
-      {/* Main Login Restriction Modal Prompt (Triggered automatically on 3rd query or manual trigger) */}
+      {/* Main Login Restriction Modal Prompt */}
       <AnimatePresence>
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -322,31 +316,35 @@ const AIAssistant = () => {
               </div>
 
               <h3 className="text-xl font-bold text-slate-950 mb-3 tracking-tight">
-                Continue Learning with Crackit AI
+                🔒 Continue Learning with CrackIt AI
               </h3>
 
               <p className="text-slate-500 text-sm leading-relaxed mb-6">
-                Login or create an account to continue unlimited AI-powered exam preparation.
+                You have used your 2 free AI preview questions. <br/>
+                Login or create an account to continue chatting with the AI Tutor and access all Crack_It learning resources.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 w-full mb-6">
                 <button 
-                  onClick={() => handleSimulateLogin('login')}
+                  onClick={() => handleAuthRedirect('/login')}
                   className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg transition-all text-sm shadow-md shadow-blue-500/10 hover:shadow-lg"
                 >
                   Login
                 </button>
                 <button 
-                  onClick={() => handleSimulateLogin('register')}
+                  onClick={() => handleAuthRedirect('/register')}
                   className="w-full bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 font-semibold py-3 rounded-lg transition-colors text-sm"
                 >
                   Register
                 </button>
               </div>
 
-              <p className="text-[11px] text-slate-400 font-medium">
-                Get personalized learning, mock tests, quizzes, and AI assistance.
-              </p>
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="text-xs text-slate-400 hover:text-slate-600 font-medium transition-colors"
+              >
+                Cancel
+              </button>
             </motion.div>
           </div>
         )}

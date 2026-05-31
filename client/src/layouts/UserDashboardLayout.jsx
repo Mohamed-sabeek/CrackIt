@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 import { 
   BookOpen, LogOut, LayoutDashboard, Compass, HelpCircle, 
-  Bot, BarChart3, Settings, Calendar, Bell, ChevronLeft, Search, Flame, User, FileText, Award, ChevronDown
+  Bot, BarChart3, Settings, Calendar, Bell, ChevronLeft, Search, Flame, User, FileText, Award, ChevronDown, Newspaper, BellRing, Menu, X
 } from 'lucide-react';
 import ThemeToggle from '../components/common/ThemeToggle';
 import logoImg from '../assets/crackit-logo.webp';
@@ -17,6 +17,7 @@ const UserDashboardLayout = () => {
 
   // Sidebar collapse state
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Dropdown states
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -115,12 +116,26 @@ const UserDashboardLayout = () => {
 
   // Click outside listener for dropdowns
   useEffect(() => {
-    const handleOutsideClick = () => {
-      setIsNotificationOpen(false);
-      setIsProfileOpen(false);
+    const handleOutsideClick = (e) => {
+      // Don't close if clicking inside notification or profile toggles
+      if (!e.target.closest('.no-close-dropdown')) {
+        setIsNotificationOpen(false);
+        setIsProfileOpen(false);
+      }
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsMobileSidebarOpen(false);
+        setIsNotificationOpen(false);
+        setIsProfileOpen(false);
+      }
     };
     window.addEventListener('click', handleOutsideClick);
-    return () => window.removeEventListener('click', handleOutsideClick);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('click', handleOutsideClick);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -152,7 +167,9 @@ const UserDashboardLayout = () => {
     { name: 'Previous Papers', path: '/dashboard/papers', icon: FileText },
     { name: 'Mock Tests', path: '/dashboard/mocktests', icon: HelpCircle },
     { name: 'My Results', path: '/dashboard/results', icon: Award },
-    { name: 'AI Tutor', path: '/dashboard/ai-assistant', icon: Bot },
+    { name: 'AI Mentor', path: '/dashboard/ai-assistant', icon: Bot },
+    { name: 'Current Affairs', path: '/dashboard/current-affairs', icon: Newspaper },
+    { name: 'Exam Updates', path: '/dashboard/exam-updates', icon: BellRing },
     { name: 'Profile', path: '/dashboard/profile', icon: User }
   ];
 
@@ -164,8 +181,21 @@ const UserDashboardLayout = () => {
   return (
     <div className="h-screen overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex font-sans select-none transition-colors duration-300">
       
+      {/* MOBILE OVERLAY */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+
       {/* SIDEBAR */}
-      <aside className={`h-screen flex-shrink-0 border-r border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 flex flex-col justify-between p-6 transition-all duration-300 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
+      <aside 
+        className={`fixed md:relative z-50 h-screen flex-shrink-0 border-r border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 flex flex-col justify-between p-6 transition-all duration-300 
+        ${isSidebarCollapsed ? 'md:w-20' : 'md:w-64'} 
+        ${isMobileSidebarOpen ? 'w-64 translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}
+      >
         <div>
           {/* Collapse Trigger Button & Logo */}
           <div className="flex items-center justify-between mb-8">
@@ -185,6 +215,12 @@ const UserDashboardLayout = () => {
             >
               <ChevronLeft size={14} className={`transition-transform duration-300 ${isSidebarCollapsed ? 'rotate-180' : ''}`} />
             </button>
+            <button 
+              onClick={() => setIsMobileSidebarOpen(false)}
+              className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 text-slate-500 dark:text-slate-400 cursor-pointer md:hidden"
+            >
+              <X size={14} />
+            </button>
           </div>
 
           {/* Navigation Items */}
@@ -196,6 +232,7 @@ const UserDashboardLayout = () => {
                 <div key={index} className="relative group">
                   <Link
                     to={item.path}
+                    onClick={() => setIsMobileSidebarOpen(false)}
                     className={`flex items-center rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer ${
                       isActive 
                         ? 'bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/15'
@@ -228,6 +265,7 @@ const UserDashboardLayout = () => {
             <div className="relative group">
               <Link 
                 to="/dashboard/profile"
+                onClick={() => setIsMobileSidebarOpen(false)}
                 className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600/10 to-indigo-600/10 hover:from-blue-600/20 hover:to-indigo-600/20 text-blue-600 dark:text-blue-400 border border-blue-500/15 flex items-center justify-center cursor-pointer transition-all duration-200"
               >
                 <User size={16} />
@@ -278,9 +316,15 @@ const UserDashboardLayout = () => {
         {/* FLOATING TOP HEADER WRAPPER */}
         <div className="px-6 md:px-8 pt-4 md:pt-6 flex-shrink-0 relative z-40">
           <header className="h-18 px-6 flex items-center justify-between bg-white/80 dark:bg-slate-900/40 border border-slate-200/40 dark:border-slate-800/30 rounded-2xl shadow-xs backdrop-blur-md transition-all duration-300">
-            {/* LEFT: Dynamic Icon & Page Name */}
+            {/* LEFT: Dynamic Icon & Page Name & Mobile Menu Toggle */}
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-500 dark:bg-blue-500/[0.06] flex items-center justify-center">
+              <button 
+                onClick={() => setIsMobileSidebarOpen(true)}
+                className="md:hidden p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              >
+                <Menu size={18} />
+              </button>
+              <div className="hidden md:flex w-8 h-8 rounded-xl bg-blue-500/10 text-blue-500 dark:bg-blue-500/[0.06] items-center justify-center">
                 {React.createElement(
                   navItems.find(item => location.pathname === item.path)?.icon || LayoutDashboard,
                   { size: 16 }
@@ -299,11 +343,13 @@ const UserDashboardLayout = () => {
                 <span>{new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
               </div>
 
-              {/* 2. Theme Toggle */}
-              <ThemeToggle className="w-8 h-8 rounded-xl !p-0" />
+              {/* 2. Theme Toggle (Desktop Only) */}
+              <div className="hidden sm:block">
+                <ThemeToggle />
+              </div>
 
               {/* 3. Notifications */}
-              <div className="relative" onClick={(e) => e.stopPropagation()}>
+              <div className="relative no-close-dropdown" onClick={(e) => e.stopPropagation()}>
                 <button 
                   onClick={() => {
                     setIsNotificationOpen(!isNotificationOpen);
@@ -320,7 +366,7 @@ const UserDashboardLayout = () => {
                 </button>
                 
                 {isNotificationOpen && (
-                  <div className="absolute right-0 mt-2.5 w-80 bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800/60 rounded-2xl shadow-xl p-4 z-50 space-y-3.5 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="absolute -right-14 sm:right-0 mt-2.5 w-[300px] min-[375px]:w-[320px] sm:w-80 bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800/60 rounded-2xl shadow-xl p-3 sm:p-4 z-[100] space-y-3.5 animate-in fade-in slide-in-from-top-2 duration-150">
                     <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                       <span className="text-[10px] font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">Alerts & Notifications</span>
                       <div className="flex items-center gap-2">
@@ -346,7 +392,10 @@ const UserDashboardLayout = () => {
                         notifications.map((n) => (
                           <div 
                             key={n._id}
-                            onClick={() => !n.isRead && markAsRead(n._id)}
+                            onClick={() => {
+                              if (!n.isRead) markAsRead(n._id);
+                              setIsNotificationOpen(false);
+                            }}
                             className={`relative text-xs p-2.5 rounded-xl transition-all cursor-pointer border ${
                               n.isRead 
                                 ? 'bg-transparent border-transparent hover:bg-slate-50/50 dark:hover:bg-slate-950/20' 
@@ -376,7 +425,7 @@ const UserDashboardLayout = () => {
               </div>
 
               {/* 4. User Profile Dropdown */}
-              <div className="relative" onClick={(e) => e.stopPropagation()}>
+              <div className="relative no-close-dropdown" onClick={(e) => e.stopPropagation()}>
                 <button 
                   onClick={() => {
                     setIsProfileOpen(!isProfileOpen);
@@ -391,7 +440,7 @@ const UserDashboardLayout = () => {
                 </button>
 
                 {isProfileOpen && (
-                  <div className="absolute right-0 mt-2.5 w-48 bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800/60 rounded-2xl shadow-xl py-2 z-50">
+                  <div className="absolute right-[-12px] sm:right-0 mt-2.5 w-[220px] sm:w-48 bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800/60 rounded-2xl shadow-xl py-2 z-[100] animate-in fade-in slide-in-from-top-2 duration-150">
                     <div className="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800">
                       <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{user?.name || 'Mohamed Sabeek'}</p>
                       <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{user?.email || 'sabeek@gmail.com'}</p>
@@ -411,7 +460,7 @@ const UserDashboardLayout = () => {
                         className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold rounded-xl text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-950/40 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors"
                       >
                         <Bot size={13} className="text-emerald-500" />
-                        <span>AI Tutor</span>
+                        <span>AI Mentor</span>
                       </Link>
                       <button 
                         onClick={() => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Bot, CheckSquare, Clock, FileText, MessageSquare, Calculator, BarChart3, Library } from 'lucide-react';
+import { Bot, CheckSquare, Clock, FileText, Newspaper, Megaphone, BarChart3, Library } from 'lucide-react';
 
 const features = [
   {
@@ -32,20 +32,19 @@ const features = [
     glow: "hover:border-emerald-300 hover:shadow-emerald-500/5"
   },
   {
-    icon: <MessageSquare size={20} className="text-pink-600" />,
-    title: "Interview Questions",
-    description: "Curated interview experiences and common questions for final rounds.",
+    icon: <Newspaper size={20} className="text-pink-600" />,
+    title: "Current Affairs",
+    description: "Daily updated current affairs resources tailored for government exams.",
     bg: "bg-pink-50/70 border-pink-100/50",
     glow: "hover:border-pink-300 hover:shadow-pink-500/5"
   },
   {
-    icon: <Calculator size={20} className="text-orange-600" />,
-    title: "Important Formulas",
-    description: "Quick revision notes and cheat sheets for quantitative aptitude.",
+    icon: <Megaphone size={20} className="text-orange-600" />,
+    title: "Exam Updates",
+    description: "Real-time notifications for exam dates, admit cards, and results.",
     bg: "bg-orange-50/70 border-orange-100/50",
     glow: "hover:border-orange-300 hover:shadow-orange-500/5"
-  },
-  {
+  },  {
     icon: <BarChart3 size={20} className="text-cyan-600" />,
     title: "Performance Analytics",
     description: "Track your progress with AI-driven insights and weak area identification.",

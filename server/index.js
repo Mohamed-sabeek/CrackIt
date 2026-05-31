@@ -10,6 +10,9 @@ import questionRoutes from './routes/questionRoutes.js';
 import testRoutes from './routes/testRoutes.js';
 import testAttemptRoutes from './routes/testAttemptRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
+import currentAffairRoutes from './routes/currentAffairRoutes.js';
+import examUpdateRoutes from './routes/examUpdateRoutes.js';
+import adminAnalyticsRoutes from './routes/adminAnalyticsRoutes.js';
 
 // Startup validation for critical configuration variables
 if (!process.env.MONGO_URI) {
@@ -83,6 +86,9 @@ app.use('/api/questions', questionRoutes);
 app.use('/api/tests', testRoutes);
 app.use('/api/test-attempts', testAttemptRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/current-affairs', currentAffairRoutes);
+app.use('/api/exam-updates', examUpdateRoutes);
+app.use('/api/admin/analytics', adminAnalyticsRoutes);
 
 // Basic Route
 app.get('/', (req, res) => {

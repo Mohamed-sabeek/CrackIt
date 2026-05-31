@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
 const CTA = () => {
@@ -27,12 +28,9 @@ const CTA = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 relative z-10 max-w-md mx-auto">
-            <button className="w-full bg-white hover:bg-slate-100 text-slate-950 px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-sm text-sm">
+            <Link to="/register" className="w-full sm:w-auto flex items-center justify-center bg-white hover:bg-slate-100 text-slate-950 px-8 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-sm text-sm">
               Create Free Account
-            </button>
-            <button className="w-full bg-transparent hover:bg-slate-800/40 text-white border border-slate-700 px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 text-sm">
-              Explore Exams <ArrowRight size={16} />
-            </button>
+            </Link>
           </div>
         </motion.div>
       </div>

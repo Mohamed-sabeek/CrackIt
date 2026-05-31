@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { motion } from 'framer-motion';
-import { Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, BookOpen, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, AlertCircle, CheckCircle2 } from 'lucide-react';
+import logoImg from '../../assets/crackit-logo.webp';
 
 const LoginPage = () => {
   const { login, user } = useAuth();
@@ -21,7 +22,11 @@ const LoginPage = () => {
       if (user.role === 'admin') {
         navigate('/admin/dashboard', { replace: true });
       } else {
-        navigate('/dashboard', { replace: true });
+        if (localStorage.getItem('guest_ai_chat')) {
+          navigate('/dashboard/ai-assistant', { replace: true });
+        } else {
+          navigate('/dashboard', { replace: true });
+        }
       }
     }
   }, [user, navigate]);
@@ -59,7 +64,11 @@ const LoginPage = () => {
         if (userData.role === 'admin') {
           navigate('/admin/dashboard', { replace: true });
         } else {
-          navigate('/dashboard', { replace: true });
+          if (localStorage.getItem('guest_ai_chat')) {
+            navigate('/dashboard/ai-assistant', { replace: true });
+          } else {
+            navigate('/dashboard', { replace: true });
+          }
         }
       }, 800);
     } catch (err) {
@@ -97,8 +106,8 @@ const LoginPage = () => {
       >
         {/* App Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white p-3 rounded-2xl shadow-xl flex items-center justify-center mb-3">
-            <BookOpen size={28} />
+          <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-xl mb-3 ring-2 ring-white/10">
+            <img src={logoImg} alt="Crack_It" className="w-full h-full object-cover" />
           </div>
           <h2 className="text-2xl font-bold text-white tracking-tight">Crackit Portal</h2>
           <p className="text-slate-400 text-sm mt-1">Sign in to your learning account</p>

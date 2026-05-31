@@ -1,4 +1,5 @@
-import { BookOpen, Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin } from 'lucide-react';
+import logoImg from '../../assets/crackit-logo.webp';
 
 const Footer = () => {
   return (
@@ -8,9 +9,9 @@ const Footer = () => {
           
           {/* Logo & Description */}
           <div className="col-span-1 lg:col-span-1">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="bg-gradient-to-tr from-blue-500 to-indigo-500 text-white p-2 rounded-xl">
-                <BookOpen size={24} />
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl overflow-hidden ring-2 ring-white/10 shadow-lg">
+                <img src={logoImg} alt="Crackit" className="w-full h-full object-cover" />
               </div>
               <span className="text-2xl font-bold text-white tracking-tight">Crackit</span>
             </div>

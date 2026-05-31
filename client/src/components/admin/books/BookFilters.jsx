@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
+import CustomSelect from '../../common/CustomSelect';
 
 const BOARDS = ['Stateboard', 'NCERT'];
 const CLASSES = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
@@ -20,31 +21,31 @@ const BookFilters = ({ filters, setFilters }) => {
           onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
         />
       </div>
-      <div className="flex gap-2 flex-wrap">
-        <select 
-          value={filters.board} 
-          onChange={e => setFilters(prev => ({ ...prev, board: e.target.value }))} 
-          className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-indigo-500"
-        >
-          <option value="All">All Boards</option>
-          {BOARDS.map(b => <option key={b} value={b}>{b}</option>)}
-        </select>
-        <select 
-          value={filters.className} 
-          onChange={e => setFilters(prev => ({ ...prev, className: e.target.value }))} 
-          className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-indigo-500"
-        >
-          <option value="All">All Classes</option>
-          {CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
-        </select>
-        <select 
-          value={filters.subject} 
-          onChange={e => setFilters(prev => ({ ...prev, subject: e.target.value }))} 
-          className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-indigo-500"
-        >
-          <option value="All">All Subjects</option>
-          {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
-        </select>
+      <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+        <div className="w-full sm:w-36">
+          <CustomSelect 
+            value={filters.board} 
+            onChange={e => setFilters(prev => ({ ...prev, board: e.target.value }))} 
+            options={['All', ...BOARDS].map(b => ({ value: b, label: b === 'All' ? 'All Boards' : b }))}
+            placeholder="All Boards"
+          />
+        </div>
+        <div className="w-full sm:w-36">
+          <CustomSelect 
+            value={filters.className} 
+            onChange={e => setFilters(prev => ({ ...prev, className: e.target.value }))} 
+            options={['All', ...CLASSES].map(c => ({ value: c, label: c === 'All' ? 'All Classes' : c }))}
+            placeholder="All Classes"
+          />
+        </div>
+        <div className="w-full sm:w-36">
+          <CustomSelect 
+            value={filters.subject} 
+            onChange={e => setFilters(prev => ({ ...prev, subject: e.target.value }))} 
+            options={['All', ...SUBJECTS].map(s => ({ value: s, label: s === 'All' ? 'All Subjects' : s }))}
+            placeholder="All Subjects"
+          />
+        </div>
       </div>
     </div>
   );

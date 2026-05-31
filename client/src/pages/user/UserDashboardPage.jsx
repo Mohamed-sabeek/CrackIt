@@ -3,9 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   BookOpen, FileText, HelpCircle, Bot, Award, ChevronRight, 
-  Loader2, Calendar, Target, CheckCircle2, XCircle, Percent, ArrowRight, ShieldCheck
+  Loader2, Calendar, Target, CheckCircle2, XCircle, Percent, ArrowRight, ShieldCheck, BellRing
 } from 'lucide-react';
 import api from '../../config/api';
+import PageHeader from '../../components/common/PageHeader';
 
 const UserDashboardPage = () => {
   const navigate = useNavigate();
@@ -89,21 +90,13 @@ const UserDashboardPage = () => {
     <motion.div
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-8 max-w-7xl mx-auto pb-12 text-sm text-slate-700 dark:text-slate-350"
+      className="space-y-8 max-w-7xl mx-auto pb-12 text-sm text-slate-700 dark:text-slate-300"
     >
       {/* SECTION 1: WELCOME HERO */}
-      <div className="relative rounded-3xl p-8 bg-gradient-to-tr from-blue-600 to-indigo-700 text-white shadow-xl shadow-blue-600/15 overflow-hidden">
-        <div className="absolute right-0 top-0 w-64 h-64 bg-white/[0.03] rounded-full blur-3xl -translate-y-12 translate-x-12"></div>
-        <div className="absolute left-1/3 bottom-0 w-32 h-32 bg-white/[0.02] rounded-full blur-2xl translate-y-12"></div>
-        
-        <div className="relative z-10 space-y-2">
-          <span className="text-[10px] bg-white/20 text-white border border-white/20 px-2 py-0.5 rounded font-extrabold uppercase tracking-wider">Student Portal</span>
-          <h1 className="text-2xl md:text-3xl font-black tracking-tight">Vanakkam, {userName || 'Learner'} 👋</h1>
-          <p className="text-xs text-white/80 max-w-xl font-medium leading-relaxed">
-            Welcome back to Crack_It TNPSC Preparation Portal. {motivationText}
-          </p>
-        </div>
-      </div>
+      <PageHeader 
+        title={`Welcome back, ${userName || 'Student'} 👋`}
+        description={motivationText}
+      />
 
       {/* SECTION 2: PERFORMANCE STATISTICS CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -124,7 +117,7 @@ const UserDashboardPage = () => {
         </div>
 
         <div className="bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-900/60 p-5 rounded-2xl flex flex-col justify-between shadow-xs">
-          <span className="text-[10px] font-bold text-slate-450 dark:text-slate-500 uppercase tracking-wider">Average Accuracy</span>
+          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Average Accuracy</span>
           <div className="flex items-baseline justify-between mt-3">
             <span className="text-2xl font-black text-slate-900 dark:text-white">{statistics?.averageAccuracy || '0%'}</span>
             <ShieldCheck size={16} className="text-emerald-500" />
@@ -135,7 +128,7 @@ const UserDashboardPage = () => {
       {/* SECTION 3: QUICK ACTIONS */}
       <div className="bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-900/60 rounded-3xl p-6 shadow-sm">
         <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4">Quick Navigation</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <Link 
             to="/dashboard/syllabus" 
             className="flex items-center gap-3.5 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/40 border border-slate-150 dark:border-slate-900/60 hover:border-blue-500/40 hover:bg-blue-500/[0.02] dark:hover:bg-blue-500/[0.01] transition-all group"
@@ -183,8 +176,21 @@ const UserDashboardPage = () => {
               <Bot size={18} />
             </div>
             <div className="overflow-hidden">
-              <h5 className="font-bold text-slate-900 dark:text-white truncate">Open AI Tutor</h5>
+              <h5 className="font-bold text-slate-900 dark:text-white truncate">Open AI Mentor</h5>
               <span className="text-[10px] text-slate-400">Ask questions</span>
+            </div>
+          </Link>
+
+          <Link 
+            to="/dashboard/exam-updates" 
+            className="flex items-center gap-3.5 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/40 border border-slate-150 dark:border-slate-900/60 hover:border-pink-500/40 hover:bg-pink-500/[0.02] dark:hover:bg-pink-500/[0.01] transition-all group"
+          >
+            <div className="w-10 h-10 rounded-xl bg-pink-500/10 text-pink-500 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+              <BellRing size={18} />
+            </div>
+            <div className="overflow-hidden">
+              <h5 className="font-bold text-slate-900 dark:text-white truncate">Exam Updates</h5>
+              <span className="text-[10px] text-slate-400">Track notifications</span>
             </div>
           </Link>
         </div>
@@ -212,37 +218,69 @@ const UserDashboardPage = () => {
                 <p className="text-[11px] text-slate-500 mt-0.5">Solve a mock test to view detailed analytics here.</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-slate-150 dark:border-slate-900 text-slate-450 dark:text-slate-500 font-bold uppercase tracking-wider">
-                      <th className="py-2.5 pr-4">Test Name</th>
-                      <th className="py-2.5 px-4 text-center">Score</th>
-                      <th className="py-2.5 px-4 text-center">Accuracy</th>
-                      <th className="py-2.5 px-4 text-center">Date</th>
-                      <th className="py-2.5 pl-4 text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-900/40 text-slate-900 dark:text-slate-150">
-                    {recentResults.map((result) => (
-                      <tr key={result._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                        <td className="py-3.5 pr-4 font-bold max-w-[200px] truncate">{result.testName}</td>
-                        <td className="py-3.5 px-4 text-center font-extrabold text-blue-600 dark:text-blue-500">{result.score}</td>
-                        <td className="py-3.5 px-4 text-center font-semibold text-emerald-500">{result.accuracy}</td>
-                        <td className="py-3.5 px-4 text-center text-slate-450 font-medium">{formatDate(result.date)}</td>
-                        <td className="py-3.5 pl-4 text-right">
-                          <Link 
-                            to={`/dashboard/results/${result._id}`}
-                            className="inline-flex items-center gap-1 py-1.5 px-3 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white font-bold text-[10px] transition-colors"
-                          >
-                            View Result
-                            <ArrowRight size={10} />
-                          </Link>
-                        </td>
+              <div className="">
+                {/* Desktop Table */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full border-collapse text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-150 dark:border-slate-900 text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider whitespace-nowrap">
+                        <th className="py-2.5 pr-4">Test Name</th>
+                        <th className="py-2.5 px-4 text-center">Score</th>
+                        <th className="py-2.5 px-4 text-center">Accuracy</th>
+                        <th className="py-2.5 px-4 text-center">Date</th>
+                        <th className="py-2.5 pl-4 text-right">Action</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-900/40 text-slate-900 dark:text-slate-200">
+                      {recentResults.map((result) => (
+                        <tr key={result._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors whitespace-nowrap">
+                          <td className="py-3.5 pr-4 font-bold max-w-[200px] truncate">{result.testName}</td>
+                          <td className="py-3.5 px-4 text-center font-extrabold text-blue-600 dark:text-blue-500">{result.score}</td>
+                          <td className="py-3.5 px-4 text-center font-semibold text-emerald-500">{result.accuracy}</td>
+                          <td className="py-3.5 px-4 text-center text-slate-400 font-medium">{formatDate(result.date)}</td>
+                          <td className="py-3.5 pl-4 text-right">
+                            <Link 
+                              to={`/dashboard/results/${result._id}`}
+                              className="inline-flex items-center gap-1 py-1.5 px-3 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white font-bold text-[10px] transition-colors"
+                            >
+                              View Result
+                              <ArrowRight size={10} />
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="md:hidden space-y-4">
+                  {recentResults.map((result) => (
+                    <div key={result._id} className="bg-slate-50 dark:bg-slate-950/40 border border-slate-150 dark:border-slate-900 rounded-2xl p-4 space-y-3">
+                      <div className="flex justify-between items-start gap-4">
+                        <div className="font-bold text-slate-900 dark:text-white text-sm line-clamp-2">{result.testName}</div>
+                        <div className="text-[10px] font-medium text-slate-400 shrink-0 bg-white dark:bg-slate-900 px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800">{formatDate(result.date)}</div>
+                      </div>
+                      <div className="flex gap-6 border-y border-slate-200/50 dark:border-slate-800/50 py-3">
+                        <div>
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Score</div>
+                          <div className="font-black text-blue-600 dark:text-blue-500 text-base">{result.score}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Accuracy</div>
+                          <div className="font-semibold text-emerald-500 text-base">{result.accuracy}</div>
+                        </div>
+                      </div>
+                      <Link 
+                        to={`/dashboard/results/${result._id}`}
+                        className="w-full flex justify-center items-center gap-1 py-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white transition-colors font-bold text-[12px]"
+                      >
+                        View Full Result
+                        <ArrowRight size={14} />
+                      </Link>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -251,30 +289,30 @@ const UserDashboardPage = () => {
           <div className="bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-900/60 rounded-3xl p-6 shadow-sm space-y-5">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Preparation Summary</h3>
             
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               <div className="p-3 bg-slate-50 dark:bg-slate-950/40 border border-slate-150 dark:border-slate-900 rounded-xl text-center">
-                <span className="text-[10px] text-slate-450 dark:text-slate-500 block mb-1">Mocks Solved</span>
-                <span className="text-lg font-black text-slate-900 dark:text-white">{preparationSummary?.totalMockTestsTaken || 0}</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 block mb-0.5">Mocks Solved</span>
+                <span className="text-2xl font-black text-slate-900 dark:text-white">{preparationSummary?.totalMockTestsTaken || 0}</span>
               </div>
 
               <div className="p-3 bg-slate-50 dark:bg-slate-950/40 border border-slate-150 dark:border-slate-900 rounded-xl text-center">
-                <span className="text-[10px] text-slate-450 dark:text-slate-500 block mb-1">Attempted Qs</span>
-                <span className="text-lg font-black text-slate-900 dark:text-white">{preparationSummary?.totalQuestionsAttempted || 0}</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 block mb-0.5">Attempted Qs</span>
+                <span className="text-2xl font-black text-slate-900 dark:text-white">{preparationSummary?.totalQuestionsAttempted || 0}</span>
               </div>
 
               <div className="p-3 bg-emerald-500/[0.03] dark:bg-emerald-500/[0.01] border border-emerald-500/10 rounded-xl text-center">
-                <span className="text-[10px] text-emerald-500 block mb-1">Correct</span>
-                <span className="text-lg font-black text-emerald-500">{preparationSummary?.totalCorrectAnswers || 0}</span>
+                <span className="text-[10px] text-emerald-500 block mb-0.5">Correct</span>
+                <span className="text-2xl font-black text-emerald-500">{preparationSummary?.totalCorrectAnswers || 0}</span>
               </div>
 
               <div className="p-3 bg-red-500/[0.03] dark:bg-red-500/[0.01] border border-red-500/10 rounded-xl text-center">
-                <span className="text-[10px] text-red-500 block mb-1">Wrong</span>
-                <span className="text-lg font-black text-red-500">{preparationSummary?.totalWrongAnswers || 0}</span>
+                <span className="text-[10px] text-red-500 block mb-0.5">Wrong</span>
+                <span className="text-2xl font-black text-red-500">{preparationSummary?.totalWrongAnswers || 0}</span>
               </div>
 
               <div className="p-3 bg-indigo-500/[0.03] dark:bg-indigo-500/[0.01] border border-indigo-500/10 rounded-xl text-center col-span-2 md:col-span-1">
-                <span className="text-[10px] text-indigo-500 block mb-1">Overall Acc</span>
-                <span className="text-lg font-black text-indigo-500">{preparationSummary?.overallAccuracy || '0%'}</span>
+                <span className="text-[10px] text-indigo-500 block mb-0.5">Overall Acc</span>
+                <span className="text-2xl font-black text-indigo-500">{preparationSummary?.overallAccuracy || '0%'}</span>
               </div>
             </div>
           </div>
@@ -289,24 +327,20 @@ const UserDashboardPage = () => {
             <div className="bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-900/60 rounded-3xl p-6 shadow-sm space-y-4">
               <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Top Performing Mocks</h3>
               
-              <div className="space-y-2.5">
+              <div className="space-y-1.5">
                 {topPerforming.map((top, index) => (
                   <Link 
                     key={index}
                     to={`/dashboard/results/${top._id}`}
-                    className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/40 border border-slate-150 dark:border-slate-900/60 hover:border-amber-500/40 hover:bg-amber-500/[0.01] transition-all cursor-pointer"
+                    className="flex items-center justify-between py-2 px-3 rounded-xl bg-slate-50 dark:bg-slate-950/40 border border-slate-150 dark:border-slate-900/60 hover:bg-amber-500/[0.02] transition-all cursor-pointer"
                   >
                     <div className="flex items-center gap-2.5 overflow-hidden">
-                      <span className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold ${
-                        index === 0 ? 'bg-amber-500/10 text-amber-500' : 
-                        index === 1 ? 'bg-slate-300/20 text-slate-600 dark:text-slate-350' : 
-                        'bg-amber-800/10 text-amber-800 dark:text-amber-600'
-                      }`}>
-                        #{index + 1}
+                      <span className="text-sm">
+                        {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
                       </span>
-                      <span className="font-bold text-slate-800 dark:text-slate-200 truncate">{top.testName}</span>
+                      <span className="font-bold text-slate-800 dark:text-slate-200 text-[11px] md:text-xs truncate max-w-[180px]">{top.testName}</span>
                     </div>
-                    <span className="font-black text-amber-500 text-xs">{top.score}</span>
+                    <span className="font-black text-amber-500 text-[11px] md:text-xs">{top.score}</span>
                   </Link>
                 ))}
               </div>
@@ -314,18 +348,18 @@ const UserDashboardPage = () => {
           )}
 
           {/* SECTION 5: RECENT ACTIVITY TIMELINE */}
-          <div className="bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-900/60 rounded-3xl p-6 shadow-sm space-y-5">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Recent Activity Timeline</h3>
+          <div className="bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-900/60 rounded-3xl p-4 md:p-6 shadow-sm space-y-3">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Activity Timeline</h3>
 
             {recentActivities.length === 0 ? (
-              <div className="text-center py-10 bg-slate-50 dark:bg-slate-950/40 border border-slate-150 dark:border-slate-900 rounded-2xl">
-                <Target className="w-8 h-8 text-slate-400 dark:text-slate-650 mx-auto mb-2 animate-pulse" />
+              <div className="text-center py-6 bg-slate-50 dark:bg-slate-950/40 border border-slate-150 dark:border-slate-900 rounded-2xl">
+                <Target className="w-6 h-6 text-slate-400 dark:text-slate-650 mx-auto mb-2 animate-pulse" />
                 <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                  No recent activity yet. Start a mock test or chat with the AI Tutor.
+                  No recent activity yet.
                 </p>
               </div>
             ) : (
-              <div className="space-y-3.5 max-h-[300px] overflow-y-auto pr-1.5 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800 scrollbar-track-transparent">
+              <div className="space-y-1.5 max-h-[250px] overflow-y-auto pr-1.5 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800 scrollbar-track-transparent">
                 {recentActivities.map((activity, idx) => {
                   const itemPath = activity.type === 'mock_test' 
                     ? `/dashboard/results/${activity.attemptId}`
@@ -334,21 +368,21 @@ const UserDashboardPage = () => {
                     <Link 
                       key={idx} 
                       to={itemPath}
-                      className="flex items-start gap-2.5 text-xs p-2.5 hover:bg-slate-50 dark:hover:bg-slate-900/40 rounded-xl transition-all border border-transparent hover:border-slate-150 dark:hover:border-slate-900/60 cursor-pointer block group"
+                      className="flex items-start gap-2.5 text-xs py-2 px-2.5 hover:bg-slate-50 dark:hover:bg-slate-900/40 rounded-xl transition-all border border-transparent hover:border-slate-150 dark:hover:border-slate-900/60 cursor-pointer block group"
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${
+                      <span className={`w-1.5 h-1.5 rounded-full mt-1 flex-shrink-0 ${
                         activity.type === 'mock_test' ? 'bg-blue-500' : 'bg-emerald-500'
                       }`}></span>
                       <div className="flex-grow min-w-0">
-                        <div className="flex items-baseline justify-between gap-2">
-                          <span className="font-extrabold text-slate-850 dark:text-slate-200 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors">
-                            {activity.type === 'mock_test' ? 'Completed Mock Test' : 'Consulted AI Tutor'}
+                        <div className="flex items-baseline justify-between gap-1">
+                          <span className="font-bold text-slate-850 dark:text-slate-200 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors text-[11px] md:text-xs">
+                            {activity.type === 'mock_test' ? 'Completed Mock Test' : 'Consulted AI Mentor'}
                           </span>
-                          <span className="text-[9px] font-semibold text-slate-400 dark:text-slate-500 flex-shrink-0">
+                          <span className="text-[9px] font-semibold text-slate-400 flex-shrink-0">
                             {formatDate(activity.createdAt)}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-550 dark:text-slate-400 mt-0.5 leading-relaxed font-medium">
+                        <p className="text-[10px] md:text-[11px] text-slate-550 dark:text-slate-400 mt-0.5 leading-tight font-medium truncate">
                           {activity.description}
                         </p>
                       </div>

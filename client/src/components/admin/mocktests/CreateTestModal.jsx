@@ -84,7 +84,7 @@ const CreateTestModal = ({ isOpen, onClose, onSave, token }) => {
 
           <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold mb-1 dark:text-slate-300">Test Title</label>
                 <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full p-2 border rounded-xl dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none" />
@@ -99,7 +99,7 @@ const CreateTestModal = ({ isOpen, onClose, onSave, token }) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold mb-1 dark:text-slate-300">Category</label>
                 <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full p-2 border rounded-xl dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none">
@@ -116,7 +116,7 @@ const CreateTestModal = ({ isOpen, onClose, onSave, token }) => {
               )}
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-semibold mb-1 dark:text-slate-300">Duration (mins)</label>
                 <input required type="number" value={formData.duration} onChange={e => setFormData({...formData, duration: parseInt(e.target.value)})} className="w-full p-2 border rounded-xl dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none" />

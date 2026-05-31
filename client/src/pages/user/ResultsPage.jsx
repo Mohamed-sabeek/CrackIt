@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Target, Calendar, Award } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import * as mockTestService from '../../services/mockTestService';
+import PageHeader from '../../components/common/PageHeader';
 
 const ResultsPage = () => {
   const [attempts, setAttempts] = useState([]);
@@ -28,21 +29,10 @@ const ResultsPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-10">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-indigo-600 to-purple-900 text-white p-8 md:p-12 shadow-2xl"
-      >
-        <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
-          <Target size={240} />
-        </div>
-        <div className="relative z-10 max-w-3xl space-y-4">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">Your Results</h1>
-          <p className="text-lg md:text-xl text-indigo-100 max-w-2xl leading-relaxed">
-            Review your past mock test performances and identify areas for improvement.
-          </p>
-        </div>
-      </motion.div>
+      <PageHeader 
+        title="Your Results" 
+        description="Review your past mock test performances and identify areas for improvement." 
+      />
 
       {loading ? (
         <p className="text-center py-10 dark:text-white">Loading your results...</p>

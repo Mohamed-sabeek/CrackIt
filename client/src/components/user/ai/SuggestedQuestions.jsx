@@ -22,7 +22,7 @@ const SuggestedQuestions = ({ onSelectSuggestion }) => {
             onClick={() => onSelectSuggestion(item.text)}
             className="flex items-center gap-3.5 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 text-left rounded-2xl transition-all cursor-pointer group shadow-sm"
           >
-            <span className="text-xl bg-slate-100 dark:bg-slate-850 p-2 rounded-xl group-hover:bg-blue-500/10 group-hover:scale-110 transition-transform">
+            <span className="text-xl bg-slate-100 dark:bg-slate-800 p-2 rounded-xl group-hover:bg-blue-500/10 group-hover:scale-110 transition-transform">
               {item.icon}
             </span>
             <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400">
