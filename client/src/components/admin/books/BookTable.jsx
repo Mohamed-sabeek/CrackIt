@@ -9,6 +9,7 @@ const BookTable = ({ books, onEdit, onDelete }) => {
           <tr className="border-b border-slate-200 dark:border-slate-800">
             <th className="pb-3 px-4 font-semibold text-slate-500">Book</th>
             <th className="pb-3 px-4 font-semibold text-slate-500">Class & Board</th>
+            <th className="pb-3 px-4 font-semibold text-slate-500">Source & Medium</th>
             <th className="pb-3 px-4 font-semibold text-slate-500 text-right">Actions</th>
           </tr>
         </thead>
@@ -30,6 +31,16 @@ const BookTable = ({ books, onEdit, onDelete }) => {
               <td className="py-4 px-4">
                 <p className="font-semibold text-slate-700 dark:text-slate-300">{book.className}</p>
                 <p className="text-xs text-slate-500">{book.board}</p>
+              </td>
+              <td className="py-4 px-4">
+                <p className="font-semibold text-slate-700 dark:text-slate-300">{book.sourceName || 'TN Textbooks'}</p>
+                <span className={`inline-block px-2 py-0.5 mt-1 rounded text-[10px] font-bold uppercase tracking-wider ${
+                  book.medium === 'Tamil' 
+                    ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' 
+                    : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                }`}>
+                  {book.medium || 'English'}
+                </span>
               </td>
               <td className="py-4 px-4 text-right">
                 <div className="flex items-center justify-end gap-2">

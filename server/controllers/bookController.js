@@ -4,7 +4,7 @@ import { convertDriveLink, convertDriveImageLink } from '../utils/driveHelper.js
 
 export const createBook = async (req, res) => {
   try {
-    const { title, board, className, subject, resourceUrl, thumbnail } = req.body;
+    const { title, board, className, subject, resourceUrl, thumbnail, medium, sourceName } = req.body;
 
     const processedThumbnail = convertDriveImageLink(thumbnail);
 
@@ -13,6 +13,8 @@ export const createBook = async (req, res) => {
       board,
       className,
       subject,
+      medium,
+      sourceName,
       resourceUrl,
       thumbnail: processedThumbnail || `https://placehold.co/400x600/2563eb/ffffff?text=${encodeURIComponent(subject || 'Book')}`,
       uploadedBy: req.user ? req.user._id : null
@@ -41,7 +43,7 @@ export const createBook = async (req, res) => {
 
 export const getBooks = async (req, res) => {
   try {
-    const { board, className, subject, search } = req.query;
+    const { board, className, subject, search, medium } = req.query;
 
     let query = {};
 
@@ -54,6 +56,9 @@ export const getBooks = async (req, res) => {
     if (subject && subject !== 'All') {
       query.subject = subject;
     }
+    if (medium && medium !== 'All Mediums' && medium !== 'All') {
+      query.medium = medium;
+    }
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: 'i' } },
@@ -61,7 +66,9 @@ export const getBooks = async (req, res) => {
       ];
     }
 
-    const books = await Book.find(query).sort({ createdAt: -1 });
+    const books = await Book.find(query)
+      .collation({ locale: "en", numericOrdering: true })
+      .sort({ className: 1, subject: 1 });
     res.status(200).json(books);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch books', error: error.message });

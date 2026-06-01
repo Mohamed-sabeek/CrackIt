@@ -18,6 +18,15 @@ const bookSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Subject is required']
   },
+  medium: {
+    type: String,
+    enum: ['Tamil', 'English'],
+    default: 'English'
+  },
+  sourceName: {
+    type: String,
+    default: 'TN Textbooks'
+  },
   resourceUrl: {
     type: String,
     required: [true, 'Resource URL is required']

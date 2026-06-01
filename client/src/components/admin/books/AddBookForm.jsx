@@ -5,6 +5,7 @@ import { X, Link, Loader, CheckCircle } from 'lucide-react';
 const BOARDS = ['Stateboard', 'NCERT'];
 const CLASSES = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
 const SUBJECTS = ['History', 'Geography', 'Science', 'Polity', 'Economy', 'Tamil', 'English', 'Maths'];
+const MEDIUMS = ['Tamil', 'English'];
 
 const AddBookForm = ({ isOpen, onClose, onSave, saving }) => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,8 @@ const AddBookForm = ({ isOpen, onClose, onSave, saving }) => {
     className: 'Class 6',
     board: 'Stateboard',
     subject: 'History',
+    medium: 'English',
+    sourceName: 'TN Textbooks',
     resourceUrl: '',
     thumbnail: ''
   });
@@ -71,11 +74,24 @@ const AddBookForm = ({ isOpen, onClose, onSave, saving }) => {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Subject</label>
+                    <select name="subject" value={formData.subject} onChange={handleInputChange} className="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-indigo-500">
+                      {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Medium</label>
+                    <select name="medium" value={formData.medium} onChange={handleInputChange} className="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-indigo-500">
+                      {MEDIUMS.map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                  </div>
+                </div>
+
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Subject</label>
-                  <select name="subject" value={formData.subject} onChange={handleInputChange} className="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-indigo-500">
-                    {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Source Name</label>
+                  <input required type="text" name="sourceName" value={formData.sourceName} onChange={handleInputChange} className="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-indigo-500" placeholder="e.g., TN Textbooks" />
                 </div>
 
                 <div>

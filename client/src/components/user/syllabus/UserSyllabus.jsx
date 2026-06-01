@@ -8,6 +8,7 @@ import PageHeader from '../../common/PageHeader';
 const BOARDS = ['Stateboard', 'NCERT'];
 const CLASSES = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
 const SUBJECTS = ['History', 'Geography', 'Science', 'Polity', 'Economy', 'Tamil', 'English', 'Maths'];
+const MEDIUMS = ['Tamil', 'English'];
 
 const UserSyllabus = () => {
   const [books, setBooks] = useState([]);
@@ -18,6 +19,7 @@ const UserSyllabus = () => {
   const [selectedBoard, setSelectedBoard] = useState('Stateboard');
   const [selectedClass, setSelectedClass] = useState('All');
   const [selectedSubject, setSelectedSubject] = useState('All');
+  const [selectedMedium, setSelectedMedium] = useState('All Mediums');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
 
   useEffect(() => {
@@ -45,10 +47,11 @@ const UserSyllabus = () => {
       const matchesBoard = book.board === selectedBoard;
       const matchesClass = selectedClass === 'All' || book.className === selectedClass;
       const matchesSubject = selectedSubject === 'All' || book.subject === selectedSubject;
+      const matchesMedium = selectedMedium === 'All Mediums' || (book.medium || 'English') === selectedMedium;
 
-      return matchesSearch && matchesBoard && matchesClass && matchesSubject;
+      return matchesSearch && matchesBoard && matchesClass && matchesSubject && matchesMedium;
     });
-  }, [books, searchQuery, selectedBoard, selectedClass, selectedSubject]);
+  }, [books, searchQuery, selectedBoard, selectedClass, selectedSubject, selectedMedium]);
 
   const handleOpenResource = (e, url) => {
     e.stopPropagation();
@@ -119,6 +122,15 @@ const UserSyllabus = () => {
                   onChange={e => setSelectedSubject(e.target.value)} 
                   options={['All', ...SUBJECTS].map(s => ({ value: s, label: s === 'All' ? 'All Subjects' : s }))}
                   placeholder="All Subjects"
+                />
+              </div>
+
+              <div className="w-full sm:w-48">
+                <CustomSelect 
+                  value={selectedMedium} 
+                  onChange={e => setSelectedMedium(e.target.value)} 
+                  options={['All Mediums', ...MEDIUMS].map(m => ({ value: m, label: m }))}
+                  placeholder="All Mediums"
                 />
               </div>
             </div>
@@ -201,12 +213,18 @@ const UserSyllabus = () => {
                     : 'flex-col justify-between p-3 sm:p-5'
                 }`}>
                   <div className={`${viewMode === 'list' ? 'flex-1 min-w-0' : ''}`}>
-                    <div className={`flex gap-1.5 sm:gap-2 ${viewMode === 'list' ? 'mb-1 sm:mb-1.5' : 'mb-1.5 sm:mb-2'}`}>
+                    <div className={`flex flex-wrap gap-1.5 sm:gap-2 ${viewMode === 'list' ? 'mb-1 sm:mb-1.5' : 'mb-1.5 sm:mb-2'}`}>
                       <span className="px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[8px] sm:text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                         {book.className}
                       </span>
                       <span className="px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-[8px] sm:text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
                         {book.subject}
+                      </span>
+                      <span className={`px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-bold uppercase tracking-wider ${book.medium === 'Tamil' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'}`}>
+                        {book.medium || 'English'}
+                      </span>
+                      <span className={`px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-bold uppercase tracking-wider ${book.board === 'NCERT' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'}`}>
+                        {book.board}
                       </span>
                     </div>
                     <h4 className={`font-bold text-slate-900 dark:text-white leading-tight truncate ${
@@ -214,9 +232,10 @@ const UserSyllabus = () => {
                     }`}>
                       {book.title}
                     </h4>
-                    {viewMode === 'list' && (
-                      <p className="text-[10px] sm:text-xs text-slate-500 truncate">{book.board}</p>
-                    )}
+                    <p className={`text-[10px] sm:text-xs text-slate-500 truncate flex items-center gap-1 ${viewMode === 'grid' ? 'mb-1' : ''}`}>
+                      <Library size={12} className="text-slate-400" />
+                      {book.sourceName || 'TN Textbooks'}
+                    </p>
                   </div>
 
                   {/* Actions */}
