@@ -4,7 +4,7 @@ import CustomSelect from '../../common/CustomSelect';
 
 const BOARDS = ['Stateboard', 'NCERT'];
 const CLASSES = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
-const SUBJECTS = ['History', 'Geography', 'Science', 'Polity', 'Economy', 'Tamil', 'English', 'Maths'];
+const SUBJECTS = ['History', 'Geography', 'Science', 'Social Science', 'Polity', 'Economy', 'Tamil', 'English', 'Maths'];
 
 const BookFilters = ({ filters, setFilters }) => {
   return (

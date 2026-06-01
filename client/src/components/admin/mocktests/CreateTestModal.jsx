@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import * as mockTestService from '../../../services/mockTestService';
 
 const CATEGORIES = ['Group 1', 'Group 2', 'Group 4', 'VAO'];
-const SUBJECTS = ['History', 'Geography', 'Polity', 'Science', 'Economics', 'Tamil'];
+const SUBJECTS = ['History', 'Geography', 'Polity', 'Science', 'Social Science', 'Economics', 'Tamil'];
 
 const CreateTestModal = ({ isOpen, onClose, onSave, token }) => {
   const [formData, setFormData] = useState({
