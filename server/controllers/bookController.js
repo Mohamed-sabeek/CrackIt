@@ -4,9 +4,7 @@ import { convertDriveLink, convertDriveImageLink } from '../utils/driveHelper.js
 
 export const createBook = async (req, res) => {
   try {
-    const { title, board, className, subject, driveLink, thumbnail } = req.body;
-
-    const { previewUrl, downloadUrl } = convertDriveLink(driveLink);
+    const { title, board, className, subject, resourceUrl, thumbnail } = req.body;
 
     const processedThumbnail = convertDriveImageLink(thumbnail);
 
@@ -15,9 +13,7 @@ export const createBook = async (req, res) => {
       board,
       className,
       subject,
-      driveLink,
-      previewUrl,
-      downloadUrl,
+      resourceUrl,
       thumbnail: processedThumbnail || `https://placehold.co/400x600/2563eb/ffffff?text=${encodeURIComponent(subject || 'Book')}`,
       uploadedBy: req.user ? req.user._id : null
     });
@@ -85,10 +81,8 @@ export const getBookById = async (req, res) => {
 export const updateBook = async (req, res) => {
   try {
     const updates = { ...req.body };
-    if (updates.driveLink) {
-      const { previewUrl, downloadUrl } = convertDriveLink(updates.driveLink);
-      updates.previewUrl = previewUrl;
-      updates.downloadUrl = downloadUrl;
+    if (updates.resourceUrl) {
+      // Just keep resourceUrl as is
     }
     if (updates.thumbnail) {
       updates.thumbnail = convertDriveImageLink(updates.thumbnail);

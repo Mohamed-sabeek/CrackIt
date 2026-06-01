@@ -34,11 +34,11 @@ const BookTable = ({ books, onEdit, onDelete }) => {
               <td className="py-4 px-4 text-right">
                 <div className="flex items-center justify-end gap-2">
                   <a 
-                    href={book.previewUrl || book.driveLink} 
+                    href={book.resourceUrl} 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="p-2 text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg" 
-                    title="Preview"
+                    title="Open Resource"
                   >
                     <Eye size={18} />
                   </a>

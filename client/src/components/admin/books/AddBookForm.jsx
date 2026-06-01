@@ -12,7 +12,7 @@ const AddBookForm = ({ isOpen, onClose, onSave, saving }) => {
     className: 'Class 6',
     board: 'Stateboard',
     subject: 'History',
-    driveLink: '',
+    resourceUrl: '',
     thumbnail: ''
   });
 
@@ -23,7 +23,7 @@ const AddBookForm = ({ isOpen, onClose, onSave, saving }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.driveLink) return alert('Please provide a Google Drive link.');
+    if (!formData.resourceUrl) return alert('Please provide an official resource URL.');
     onSave(formData);
   };
 
@@ -79,12 +79,12 @@ const AddBookForm = ({ isOpen, onClose, onSave, saving }) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Google Drive PDF Link</label>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Official Resource URL</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <Link className="h-5 w-5 text-slate-400" />
                     </div>
-                    <input required type="url" name="driveLink" value={formData.driveLink} onChange={handleInputChange} className="w-full pl-10 p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-indigo-500" placeholder="https://drive.google.com/file/d/.../view?usp=sharing" />
+                    <input required type="url" name="resourceUrl" value={formData.resourceUrl} onChange={handleInputChange} className="w-full pl-10 p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-indigo-500" placeholder="https://example.com/textbook.pdf" />
                   </div>
                 </div>
 

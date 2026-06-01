@@ -50,7 +50,7 @@ const UserSyllabus = () => {
     });
   }, [books, searchQuery, selectedBoard, selectedClass, selectedSubject]);
 
-  const handleDownload = (e, url) => {
+  const handleOpenResource = (e, url) => {
     e.stopPropagation();
     window.open(url, '_blank');
   };
@@ -223,24 +223,15 @@ const UserSyllabus = () => {
                   <div className={`flex items-center gap-1.5 sm:gap-3 flex-shrink-0 ${
                     viewMode === 'list' 
                       ? 'w-full sm:w-auto justify-end mt-1 sm:mt-0' 
-                      : 'mt-3 sm:mt-4'
+                      : 'mt-3 sm:mt-4 w-full'
                   }`}>
                     <button 
-                      onClick={(e) => handleDownload(e, book.previewUrl || book.driveLink)}
-                      className={`flex items-center justify-center gap-1.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 font-bold rounded-xl transition-colors ${
-                        viewMode === 'list' ? 'px-4 py-2 text-xs flex-1 sm:flex-none' : 'flex-1 py-2 sm:py-3 px-2 sm:px-4 min-h-[36px] sm:min-h-[44px] text-xs sm:text-sm'
+                      onClick={(e) => handleOpenResource(e, book.resourceUrl)}
+                      className={`flex items-center justify-center gap-1.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 font-bold rounded-xl transition-colors w-full ${
+                        viewMode === 'list' ? 'px-4 py-2 text-xs flex-1 sm:flex-none' : 'py-2 sm:py-3 px-2 sm:px-4 min-h-[36px] sm:min-h-[44px] text-xs sm:text-sm'
                       }`}
                     >
-                      <Eye size={viewMode === 'list' ? 14 : 18} /> <span>View</span>
-                    </button>
-                    <button 
-                      onClick={(e) => handleDownload(e, book.downloadUrl || book.driveLink)}
-                      className={`flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors ${
-                        viewMode === 'list' ? 'p-2' : 'p-2 sm:p-3 min-h-[36px] sm:min-h-[44px] min-w-[36px] sm:min-w-[44px]'
-                      }`}
-                      title="Download PDF"
-                    >
-                      <Download size={viewMode === 'list' ? 14 : 18} />
+                      <Eye size={viewMode === 'list' ? 14 : 18} /> <span>Open Resource</span>
                     </button>
                   </div>
                 </div>

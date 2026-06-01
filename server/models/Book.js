@@ -18,16 +18,14 @@ const bookSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Subject is required']
   },
-  driveLink: {
+  resourceUrl: {
     type: String,
-    required: [true, 'Drive Link is required']
+    required: [true, 'Resource URL is required']
   },
-  previewUrl: {
-    type: String
-  },
-  downloadUrl: {
-    type: String
-  },
+  // Legacy fields for backward compatibility
+  driveLink: { type: String },
+  previewUrl: { type: String },
+  downloadUrl: { type: String },
   thumbnail: {
     type: String,
     default: ''
@@ -37,5 +35,15 @@ const bookSchema = new mongoose.Schema({
     ref: 'User'
   }
 }, { timestamps: true });
+
+bookSchema.set('toJSON', {
+  virtuals: true,
+  transform: (doc, ret) => {
+    if (!ret.resourceUrl) {
+      ret.resourceUrl = ret.previewUrl || ret.driveLink;
+    }
+    return ret;
+  }
+});
 
 export default mongoose.model('Book', bookSchema);
