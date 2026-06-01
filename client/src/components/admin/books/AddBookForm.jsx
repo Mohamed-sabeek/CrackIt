@@ -4,7 +4,7 @@ import { X, Link, Loader, CheckCircle } from 'lucide-react';
 
 const BOARDS = ['Stateboard', 'NCERT'];
 const CLASSES = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
-const SUBJECTS = ['History', 'Geography', 'Science', 'Social Science', 'Polity', 'Economy', 'Tamil', 'English', 'Maths'];
+const SUBJECTS = ['History', 'Geography', 'Science', 'Social Science', 'Polity', 'Economy', 'Tamil', 'English', 'Maths', 'Physics', 'Chemistry', 'Bio Botony', 'Bio Zoology', 'Accountancy', 'Commerce', 'Computer Applications', 'Computer Science', 'Economics'];
 const MEDIUMS = ['Tamil', 'English'];
 
 const AddBookForm = ({ isOpen, onClose, onSave, saving }) => {
